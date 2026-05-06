@@ -1,0 +1,187 @@
+*{ 
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+.container{
+    margin: auto 30px 50px;
+}
+h1{
+    text-align: center;
+    font-family:'Brush Script MT',cursive;
+    font-size: 64px;
+    color:#2D1B0D;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+body{
+    background-color: #E8D5B5;
+}
+table{
+    align-content: center;
+    max-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 20px;
+    margin: auto 0 50px;
+    overflow: hidden
+}
+th, td{
+    text-align: center;
+    padding: 20px;
+    border: 0.5px solid rgba(158, 158, 158, 0.5);
+}
+td{
+    color: #674637;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    font-weight: bold;
+}
+caption{
+    font-family:'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-size: 25px;
+    margin-bottom: 10px;
+    color: #674637;
+}
+
+tbody tr:nth-child(even) td {
+    background-color: #faefdd;
+}
+tbody tr:nth-child(odd) td {
+    background-color: #ffffff;
+}
+
+/* header row */
+thead{
+    background-color: #3E2622;
+    color: #ffffff;
+    font-weight: bold;
+}
+thead tr:first-child th:first-child {
+    border-top-left-radius: 20px;
+}
+
+thead tr:first-child th:last-child {
+    border-top-right-radius: 20px;
+}
+footer{
+    margin-top: 20px;
+    font: 16px serif;
+    color: #2c1d17;
+}
+
+button{
+    background-color: #ffffff;
+    color: #4E0000;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+}
+button:hover{
+    background-color: #4E0000;
+    color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    transition: background 0.3s;
+}
+button a{
+    background-color: #ffffff;
+    color: #4E0000;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+}
+button a:hover{
+    background-color: #4E0000;
+    color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    transition: background 0.3s;
+}
+footer{
+    margin-top: 20px;
+    font: 16px serif;
+    color: #2c1d17;
+}
+
+
+
+/*navigation bar*/
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1F140A;
+    padding: 15px 40px;
+}
+
+/* اللوجو */
+.logo img {
+    height: 50px;
+    width: auto;
+    display: block;
+}
+
+/* اللينكات */
+.nav-links a {
+    color: #E8D5B5;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+/* hover */
+.nav-links a:hover {
+    color: #B08D57;
+}
+.nav-links a {
+    position: relative;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    background: #B08D57;
+    left: 0;
+    bottom: -5px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: #2D1B0D;
+    border-bottom: 2px solid #B08D57;
+    backdrop-filter: blur(10px); /* blur effect */
+   
+}
+
+.logo img {
+    height: 50px;
+    transition: 0.3s;
+}
+
+.logo img:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 5px #B08D57);
+}
+

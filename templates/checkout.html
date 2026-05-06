@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - Lexicon Library</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <a href="{% url 'home' %}" style="color: white; text-decoration: none;">
+            ← Back to Home
+        </a>
+    </nav>
+</header>
+
+<div style="max-width: 450px; margin: 60px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
+    
+    <h2 style="color: var(--color-dark); margin-bottom: 20px;">
+        Secure Checkout
+    </h2>
+
+    <div id="summary" style="background: var(--color-light); padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--color-accent);">
+    </div>
+
+<form onsubmit="event.preventDefault(); alert('Purchase Successful!'); window.location.href='{% url &quot;home&quot; %}';">
+        
+        <input type="text" placeholder="Cardholder Name" required
+               style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px;">
+
+        <input type="text" placeholder="Card Number (XXXX XXXX XXXX)" required
+               style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px;">
+
+        <div style="display: flex; gap: 10px;">
+            <input type="text" placeholder="MM/YY" required
+                   style="width: 50%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+            
+            <input type="text" placeholder="CVV" required
+                   style="width: 50%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <button type="submit" id="buy-btn" style="width: 100%; margin-top: 20px;">
+            Pay Now
+        </button>
+
+    </form>
+</div>
+
+<script src="{% static 'js/script.js' %}"></script>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    if (id && typeof booksData !== "undefined" && booksData[id]) {
+        const book = booksData[id];
+
+        document.getElementById('summary').innerHTML = `
+            <h4 style="margin: 0;">${book.title}</h4>
+            <p style="margin: 5px 0; color: var(--color-medium);">
+                Total: <strong>${book.price}</strong>
+            </p>
+        `;
+    }
+</script>
+
+</body>
+</html>

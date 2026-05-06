@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In Page</title>
+
+    <link rel="stylesheet" href="{% static 'css/logIN-style.css' %}">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="logo">
+        </a>
+
+        <div class="nav-links">
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}">Sign Up</a>
+        </div>
+    </nav>
+</header>
+
+<h2>Log-In Page</h2>
+
+<div class="container">
+    <div class="login-box">
+
+        <form id="loginForm">
+
+            <label>User-Name:</label>
+            <input type="text" id="username" required>
+
+            <label>Password:</label>
+            <input type="password" id="pass" required>
+
+            <div class="Who">
+                <label><input type="radio" name="role" value="false"> User</label>
+                <label><input type="radio" name="role" value="true"> Admin</label>
+            </div>
+
+            <p>
+                Don't have an account?
+                <a href="{% url 'signup' %}">Sign Up</a>
+            </p>
+
+            <button type="submit">Log In</button>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>

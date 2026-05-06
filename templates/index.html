@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Home</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/papyrus_hub_logo.png' %}" class="site-logo">
+            </a>
+        </div>
+
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'borrowed_books' %}">Borrowed Books</a>
+        </div>
+    </nav>
+</header>
+
+<h1>Welcome to Papyrus Hub</h1>
+
+<div class="search-section">
+    <div class="search-box">
+        <input type="text" id="searchInput"
+               oninput="searchBooks()"
+               placeholder="Search by book title or author...">
+    </div>
+</div>
+
+<!-- Fiction -->
+<h2 class="category-title">Fiction</h2>
+<div class="gallery">
+    <a href="{% url 'book_details' %}?id=1"><img src="{% static 'images/book1.jpeg' %}"></a>
+    <a href="{% url 'book_details' %}?id=3"><img src="{% static 'images/book3.jpeg' %}"></a>
+    <a href="{% url 'book_details' %}?id=4"><img src="{% static 'images/book4.jpeg' %}"></a>
+    <a href="{% url 'book_details' %}?id=2"><img src="{% static 'images/book2.jpeg' %}"></a>
+</div>
+
+<!-- Psychology -->
+<h2 class="category-title">Psychology & Self-help</h2>
+<div class="gallery">
+    <a href="{% url 'book_details' %}?id=6"><img src="{% static 'images/book6.jpeg' %}"></a>
+    <a href="{% url 'book_details' %}?id=7"><img src="{% static 'images/book7.jpg' %}"></a>
+    <a href="{% url 'book_details' %}?id=8"><img src="{% static 'images/book8.jpg' %}"></a>
+</div>
+
+<!-- Science -->
+<h2 class="category-title">Science & Productivity</h2>
+<div class="gallery">
+    <a href="{% url 'book_details' %}?id=5"><img src="{% static 'images/book5.jpeg' %}"></a>
+</div>
+
+<!-- History -->
+<h2 class="category-title">History & Religion</h2>
+<div class="gallery">
+    <a href="{% url 'book_details' %}?id=13"><img src="{% static 'images/book13.jpg' %}"></a>
+</div>
+
+<footer>
+    <p>&copy; 2026 Papyrus Hub - Where Knowledge Lives</p>
+</footer>
+
+<script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>

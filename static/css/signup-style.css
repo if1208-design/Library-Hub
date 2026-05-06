@@ -1,0 +1,197 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    background: linear-gradient(to right, #2D1B0D, #3E2723);
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1F140A;
+    padding: 15px 40px;
+    border-bottom: 2px solid #B08D57;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+    z-index: 1000;
+}
+
+.logo img {
+    height: 50px;
+    transition: 0.3s;
+}
+
+    .logo img:hover {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 5px #B08D57);
+    }
+
+.nav-links a {
+    color: #E8D5B5;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: 500;
+    position: relative;
+    transition: 0.3s;
+}
+
+    .nav-links a:hover {
+        color: #B08D57;
+    }
+
+    .nav-links a::after {
+        content: "";
+        position: absolute;
+        width: 0%;
+        height: 2px;
+        background: #B08D57;
+        left: 0;
+        bottom: -5px;
+        transition: 0.3s;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+.active {
+    color: #B08D57;
+}
+
+/* ===== TITLE ===== */
+/* ===== TITLE ===== */
+/* ===== TITLE ===== */
+.page-title {
+    width: 100%;
+    text-align: center;
+    margin-top: 80px; /* قللت المسافة من 120 لـ 80 */
+    margin-bottom: 20px;
+    font-size: 32px;
+    color: #B08D57;
+    position: relative;
+}
+
+    .page-title::after {
+        content: "";
+        width: 60px;
+        height: 3px;
+        background-color: #B08D57;
+        display: block;
+        margin: 10px auto;
+    }
+
+/* ===== CONTAINER ===== */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* يخلي العنوان فوق البوكس */
+    align-items: center;
+    padding-top: 20px; /* بدل 120، نخليها صغيرة */
+}
+
+
+/* ===== BOX ===== */
+.signup-box {
+    width: 350px;
+    background-color: #E8D5B5;
+    padding: 30px;
+    border-radius: 15px;
+    margin: 40px auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+
+    .signup-box:hover {
+        transform: scale(1.02);
+    }
+
+/* ===== INPUT GROUP ===== */
+/* ===== INPUT GROUP ===== */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #3E2723;
+}
+
+input {
+    width: 100%; /* ياخد عرض البوكس كله */
+    padding: 14px 12px; /* مساحة داخلية أكبر */
+    border: 1.5px solid #B08D57; /* خط أنعم وأوضح */
+    border-radius: 10px; /* زوايا مستديرة أكتر */
+    outline: none;
+    background-color: #fff; /* خلفية فاتحة */
+    color: #3E2723; /* لون النص */
+    font-size: 16px; /* خط أكبر شوية */
+    transition: all 0.3s ease; /* تأثير ناعم */
+}
+
+    input:focus {
+        border-color: #3E2723;
+        box-shadow: 0 0 8px rgba(176,141,87,0.6); /* ظل ذهبي خفيف */
+    }
+
+/* ===== RADIO ===== */
+.Who {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px 0;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    width: auto;
+    transform: scale(1.2);
+}
+
+/* ===== BUTTON ===== */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #B08D57;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    button:hover {
+        background-color: #3E2723;
+    }
+
+/* ===== LOGIN LINK ===== */
+.login-link {
+    text-align: center;
+    margin-top: 15px;
+}
+
+    .login-link a {
+        color: #3E2723;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .login-link a:hover {
+            color: #B08D57;
+        }

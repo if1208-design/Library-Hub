@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Book</title>
+
+    <link rel="stylesheet" href="{% static 'css/add{% static 'CSS/add&edit.css' %}edit.css' %}">
+</head>
+
+<body>
+
+<header>
+    <a href="{% url 'home' %}" class="logo">
+        <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="logo">
+    </a>
+
+    <nav>
+        <a href="{% url 'admin_books' %}">Available Books</a>
+        <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+        <a href="{% url 'add_book' %}">Add</a>
+        <a href="{% url 'edit_book' %}">Edit</a>
+    </nav>
+</header>
+
+<h2>Edit Book</h2>
+
+<form>
+    <div class="row">
+        <div class="field">
+            <label>Book ID:</label>
+            <input type="number" name="book_id">
+        </div>
+
+        <div class="field">
+            <label>Book Name:</label>
+            <input type="text" name="book_name">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="field">
+            <label>Author:</label>
+            <input type="text" name="author">
+        </div>
+
+        <div class="field">
+            <label>Category:</label>
+            <input type="text" name="category">
+        </div>
+    </div>
+
+    <label>Description:</label>
+    <textarea name="description" rows="4"></textarea>
+
+    <input type="submit" value="Update Book">
+</form>
+
+<script src="{% static 'js/add{% static 'JS/add&edit.js' %}edit.js' %}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (typeof loadBook === "function") {
+            loadBook();
+        }
+
+        document.querySelector("form").addEventListener("submit", updateBook);
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+:root {
+    --warm-caramel: #b08d57;      /* Primary bg and highlights */
+    --espresso: #2d1b0d;           /* Top nav, deepest background, text */
+    --dark-mahogany: #3e2723;      /* Sidebar */
+    --linen-cream: #e8e5b5;        /* Cards and table background */
+    --success-green: #2ecc71;      /* Keep for status tags */
+    --warning-red: #e74c3c;        /* Keep for status tags */
+    --main-font: 'Poppins', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--main-font); }
+
+html, body { 
+    height: 100%; 
+    width: 100%; 
+    overflow-x: hidden; 
+    background-color: var(--warm-caramel); /* Warm caramel background for whole page */
+}
+
+/* --- Top Navigation Bar --- */
+.top-nav {
+    height: 60px;
+    background-color: var(--espresso); /* Espresso */
+    border-bottom: 1px solid var(--warm-caramel);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-access-links a {
+    text-decoration: none;
+    color: var(--linen-cream); /* Linen cream text */
+    margin: 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.user-access-links a:hover { color: var(--warm-caramel); }
+
+/* The "Admin" status badge in top nav */
+.status-badge {
+    background-color: var(--warm-caramel);
+    color: var(--espresso) !important;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+.admin-active { font-weight: 600 !important; color: var(--linen-cream) !important; }
+
+/* --- Main Dashboard Container --- */
+.dashboard-main {
+    display: flex;
+    min-height: calc(100% - 110px);
+}
+
+/* --- Dark Sidebar (aside) --- */
+.dashboard-sidebar {
+    width: 260px;
+    background-color: var(--dark-mahogany); /* Dark mahogany */
+    color: var(--linen-cream);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--warm-caramel);
+}
+.brand-logo { height: 35px; margin-right: 12px; }
+.brand-name { font-size: 20px; font-weight: 600; color: var(--linen-cream); }
+
+.admin-functions a {
+    display: block;
+    text-decoration: none;
+    color: var(--warm-caramel);
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.admin-functions a:hover, .active-tab {
+    background-color: rgba(176, 141, 87, 0.3);
+    color: var(--linen-cream);
+}
+
+.user-status {
+    margin-top: auto;
+    border-top: 1px solid var(--warm-caramel);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.user-role { font-size: 14px; color: var(--warm-caramel); }
+.logout-btn {
+    background: none;
+    border: 1px solid var(--warm-caramel);
+    color: var(--linen-cream);
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.logout-btn:hover { background-color: rgba(231, 76, 60, 0.2); color: var(--warning-red); }
+
+/* --- Main Content Area (section) --- */
+.dashboard-content {
+    flex-grow: 1;
+    background-color: var(--warm-caramel); /* Warm caramel */
+    padding: 30px;
+}
+
+.content-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--espresso);
+    margin-bottom: 25px;
+}
+
+/* --- Cards (Overview) --- */
+.overview-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background-color: var(--linen-cream); /* Linen cream */
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--warm-caramel);
+}
+
+.stat-card h3 { font-size: 13px; color: var(--espresso); font-weight: 500; margin-bottom: 10px; }
+.stat-number { font-size: 36px; font-weight: 600; color: var(--espresso); }
+.num-borrowed { color: var(--warning-red); }
+
+/* --- Catalogue Table Section --- */
+.catalogue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.add-new-btn {
+    background-color: var(--espresso);
+    color: var(--linen-cream);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.add-new-btn:hover { background-color: var(--dark-mahogany); }
+
+.table-container {
+    background-color: var(--linen-cream); /* Linen cream */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--warm-caramel);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th { 
+    text-align: left; 
+    color: var(--espresso); 
+    font-weight: 500; 
+    padding-bottom: 15px; 
+    border-bottom: 1px solid var(--warm-caramel); 
+}
+td { 
+    padding: 15px 0; 
+    border-bottom: 1px solid rgba(176, 141, 87, 0.2); 
+    color: var(--espresso); 
+}
+
+/* Status tags green/red */
+.status-tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.tag-available { background-color: rgba(46, 204, 113, 0.15); color: var(--success-green); }
+.tag-borrowed { background-color: rgba(231, 76, 60, 0.15); color: var(--warning-red); }
+
+/* Compact table actions */
+.action-cell {
+    display: flex;
+    gap: 8px;
+}
+.tbl-edit-btn { background: none; border: none; color: var(--warm-caramel); cursor: pointer; font-weight: 500; }
+.tbl-edit-btn:hover { color: var(--espresso); }
+.tbl-delete-btn { background: none; border: none; color: var(--warning-red); cursor: pointer; font-weight: 500; }
+
+/* --- Main Footer --- */
+.main-footer {
+    height: 50px;
+    background-color: var(--dark-mahogany); 
+    color: var(--espresso);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    font-size: 11px;
+    border-top: 1px solid var(--dark-mahogany);
+}
+.footer-center { text-transform: uppercase; word-spacing: 5px; } 

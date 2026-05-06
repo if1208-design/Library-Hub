@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papyrus Hub | Home</title>
+    <link rel="stylesheet" href="{% static 'css/cover.css' %}">
+</head>
+<body>
+
+    <div class="app-container">
+
+        <aside class="sidebar">
+            <div class="logo-section">
+                <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="Logo" class="logo-img">
+                <h2 class="brand-name">PAPYRUS</h2>
+                <p class="brand-subtitle">Hub Library</p>
+            </div>
+
+            <nav class="side-nav">
+                <a href="{% url 'cover' %}" class="active">Home</a>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Sign Up</a>
+                <a href="{% url 'admin_books' %}">Books Catalogue</a>
+                <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+                <a href="{% url 'borrowed_books' %}">Borrowed Books</a>
+                <a href="{% url 'book_details' %}">Book Details</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>&copy; 2026 Papyrus Hub</p>
+                <p>Library Management System</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="top-bar">
+                <div>
+                    <h1>Welcome to <span class="highlight">Papyrus Hub</span></h1>
+                    <p class="top-subtext">Your gateway to books and knowledge</p>
+                </div>
+            </header>
+
+            <section class="hero-v4">
+                <div class="hero-card">
+                    <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="Ancient Library" class="hero-img">
+                    <div class="hero-overlay"></div>
+
+                    <div class="hero-text">
+                        <h2>Explore Ancient Wisdom</h2>
+                        <p>Where every book opens a new world of knowledge</p>
+                        <div class="hero-buttons">
+                            <a href="{% url 'admin_books' %}" class="btn-primary">Explore Books</a>
+                            <a href="{% url 'signup' %}" class="btn-secondary">Join Now</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-grid">
+                <div class="info-box">
+                    <h3>Project Info</h3>
+                    <p><strong>Supervised by:</strong> Dr. Aliaa Magdy</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Library Status</h3>
+                    <p>Open for Research & Learning</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Available Resources</h3>
+                    <p>Books, references, and digital reading materials.</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>User Access</h3>
+                    <p>Browse, borrow, and manage your reading journey easily.</p>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <h2 class="section-title">Why Choose Papyrus Hub?</h2>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>📚 Rich Book Collection</h3>
+                        <p>Explore a wide range of academic and general books in one place.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h3>⚡ Easy Navigation</h3>
+                        <p>Quickly browse categories, view details, and manage borrowing.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h3>👩‍💻 Student Friendly</h3>
+                        <p>Designed to help students access knowledge faster and easier.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="quote-section">
+                <div class="quote-box">
+                    <h2>"A library is a gateway to imagination."</h2>
+                    <p>Read. Learn. Grow.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="{% static 'js/cover.js' %}"></script>
+</body>
+</html>
