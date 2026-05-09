@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('library.urls')),  # ← أضف السطر ده
+    path('', include('library.urls')),   
+    path('', include('authentication.urls')),
 ]
