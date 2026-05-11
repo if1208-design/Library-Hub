@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Cart - Papyrus Hub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .cart-page {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #B08D57;
+        padding-bottom: 15px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background: #3E2723;
+        color: white;
+    }
+    .cart-summary {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #B08D57;
+        text-align: right;
+    }
+    .checkout-btn {
+        background: #B08D57;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-left: 20px;
+    }
+    .checkout-btn:hover {
+        background: #3E2723;
+    }
+    .continue-btn {
+        background: transparent;
+        color: #3E2723;
+        border: 2px solid #B08D57;
+        padding: 10px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+    <div class="cart-header">
+        <h1>Shopping Cart</h1>
+        <button class="continue-btn" onclick="window.location.href='/'">Continue Shopping</button>
+    </div>
+    
+    <div id="cart-items">
+        <p style="text-align: center;">Loading cart...</p>
+    </div>
+    
+    <div class="cart-summary">
+        <h2>Total: <span id="cart-total">0 EGP</span></h2>
+        <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout</button>
+    </div>
+</div>
+
+<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/cart.js' %}"></script>
+{% endblock %}

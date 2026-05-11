@@ -1,6 +1,21 @@
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 let form = document.getElementById("signupForm");
 
-form.addEventListener("submit", function(e) {
+form.addEventListener("submit", async function(e) {
     e.preventDefault();
 
     let username = document.getElementById("username").value.trim();
@@ -24,14 +39,36 @@ form.addEventListener("submit", function(e) {
         return;
     }
 
-    let userData = {
-        username: username,
-        email: email,
-        password: password,
-        isAdmin: selectedRole.value
-    };
+    try {
+        // Send to Django backend
+        const response = await fetch('/signup/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: new URLSearchParams({
+                'username': username,
+                'email': email,
+                'password': password,
+                'Is_Admin': selectedRole.value
+            })
+        });
 
-    localStorage.setItem("user", JSON.stringify(userData));
-    alert("Account created successfully!");
-    window.location.href = "/login/";
+        if (response.redirected) {
+            // Django redirects to login page on success
+            alert("Account created successfully!");
+            window.location.href = "/login/";
+        } else {
+            const text = await response.text();
+            if (text.includes('already exists')) {
+                alert("Username already exists!");
+            } else {
+                alert("Signup failed. Please try again.");
+            }
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        alert("Signup failed. Please try again.");
+    }
 });

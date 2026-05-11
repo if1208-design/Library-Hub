@@ -1,14 +1,29 @@
-let usernameInput = document.getElementById("username");
-let passwordInput = document.getElementById("pass");
 
-function login(event) {
-    event.preventDefault();
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
-    let enteredUsername = usernameInput.value.trim();
-    let enteredPassword = passwordInput.value.trim();
+let form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("pass").value.trim();
     let selectedRole = document.querySelector('input[name="role"]:checked');
 
-    if (!enteredUsername || !enteredPassword) {
+    if (!username || !password) {
         alert("Fill all fields");
         return;
     }
@@ -18,27 +33,28 @@ function login(event) {
         return;
     }
 
-    let savedUser = JSON.parse(localStorage.getItem("user"));
+    try {
+        const response = await fetch('/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: new URLSearchParams({
+                'username': username,
+                'password': password,
+                'role': selectedRole.value
+            })
+        });
 
-    if (!savedUser) {
-        alert("No account found, please sign up first.");
-        return;
-    }
-
-    if (
-        enteredUsername === savedUser.username &&
-        enteredPassword === savedUser.password &&
-        selectedRole.value === savedUser.isAdmin
-    ) {
-        if (savedUser.isAdmin === "true") {
-            window.location.href = "/admin-dashboard/";
+        if (response.redirected) {
+            // Django redirects to admin-dashboard or cover on success
+            window.location.href = response.url;
         } else {
-            window.location.href = "/cover/";
+            alert("Invalid username or password");
         }
-    } else {
-        alert("Invalid login data.");
+    } catch (error) {
+        console.error('Login error:', error);
+        alert("Login failed. Please try again.");
     }
-}
-
-let form = document.getElementById("loginForm");
-form.addEventListener("submit", login);
+});
