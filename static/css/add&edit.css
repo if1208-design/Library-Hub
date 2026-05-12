@@ -228,3 +228,36 @@ input[type="submit"]:hover {
 input[type="submit"]:active {
     transform: translateY(0);
 }
+
+select {
+    width: 100%;
+    background: var(--light-bg);
+    border: 1.5px solid rgba(176, 141, 87, 0.4);
+    border-radius: 6px;
+    color: var(--brown-dark);
+    font-size: 15px;
+    padding: 11px 14px;
+    outline: none;
+    transition: 0.3s;
+    appearance: none;
+    cursor: pointer;
+}
+
+select:focus {
+    border-color: var(--brown-main);
+    background: #fff;
+    box-shadow: 0 0 8px rgba(176, 141, 87, 0.4);
+}
+
+.msg {
+    background: var(--gold);
+    color: var(--brown-dark);
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-left: 4px solid var(--brown-main);
+}

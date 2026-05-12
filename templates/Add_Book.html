@@ -3,8 +3,7 @@
 <html>
 <head>
     <title>Add Book</title>
-
-    <link rel="stylesheet" href="{% static 'css/add&edit.css' %}">
+    <link rel="stylesheet" href="{% static 'css/add_edit.css' %}">
 </head>
 
 <body>
@@ -12,47 +11,76 @@
         <a href="{% url 'home' %}" class="logo">
             <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="logo">
         </a>
-
         <nav>
             <a href="{% url 'admin_books' %}">Available Books</a>
             <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
             <a href="{% url 'add_book' %}">Add</a>
-            <a href="{% url 'edit_book' %}">Edit</a>
         </nav>
     </header>
 
     <h2>Add New Book</h2>
 
-    <form>
+   {% if messages %}
+    {% for message in messages %}
+        <div class="msg">{{ message }}</div>
+    {% endfor %}
+   {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
         <div class="row">
-            <div class="field">
-                <label>Book ID:</label>
-                <input type="number" name="book_id" required>
-            </div>
             <div class="field">
                 <label>Book Name:</label>
                 <input type="text" name="book_name" required>
+            </div>
+            <div class="field">
+                <label>Author:</label>
+                <input type="text" name="author" required>
             </div>
         </div>
 
         <div class="row">
             <div class="field">
-                <label>Author:</label>
-                <input type="text" name="author" required>
+                <label>Category:</label>
+                <select name="category">
+                    <option value="fiction">Fiction</option>
+                    <option value="psychology">Psychology & Self-help</option>
+                    <option value="science">Science & Productivity</option>
+                    <option value="history">History & Religion</option>
+                    <option value="technology">Technology</option>
+                    <option value="literature">Literature</option>
+                    <option value="children">Children</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
             <div class="field">
-                <label>Category:</label>
-                <input type="text" name="category">
+                <label>Total Copies:</label>
+                <input type="number" name="total_copies" min="1" value="1" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Price:</label>
+                <input type="number" name="price" step="0.01" min="0" value="0">
+            </div>
+            <div class="field">
+                <label>Borrow Fee:</label>
+                <input type="number" name="borrow_fee" step="0.01" min="0" value="0">
             </div>
         </div>
 
         <label>Description:</label>
         <textarea name="description" rows="4"></textarea>
 
+        <label>Cover Image:</label>
+        <input type="file" name="cover_image" accept="image/*">
+
         <input type="submit" value="Add Book">
     </form>
 
-    <script src="{% static 'js/add&edit.js' %}"></script>
+    <script src="{% static 'js/add_edit.js' %}"></script>
 
     <script>
         document.querySelector("form").addEventListener("submit", addBook);
