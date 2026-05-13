@@ -3,11 +3,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Checkout - Lexicon Library</title>
-
+    <title>Checkout - Papyrus Hub</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-
 <body>
 
 <header>
@@ -20,50 +18,85 @@
 
 <div style="max-width: 450px; margin: 60px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
     
-    <h2 style="color: var(--color-dark); margin-bottom: 20px;">
+    <h2 style="color: #2D1B0D; margin-bottom: 20px;">
         Secure Checkout
     </h2>
 
-    <div id="summary" style="background: var(--color-light); padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--color-accent);">
+    <div id="summary" style="background: #E8D5B5; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #B08D57;">
+        <p>Loading order summary...</p>
     </div>
 
-<form onsubmit="event.preventDefault(); alert('Purchase Successful!'); window.location.href='/';">        <input type="text" placeholder="Cardholder Name" required
+    <form id="paymentForm">
+        <input type="text" id="card_name" placeholder="Cardholder Name" required
                style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px;">
 
-        <input type="text" placeholder="Card Number (XXXX XXXX XXXX)" required
+        <input type="text" id="card_number" placeholder="Card Number (XXXX XXXX XXXX XXXX)" required
                style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px;">
 
         <div style="display: flex; gap: 10px;">
-            <input type="text" placeholder="MM/YY" required
+            <input type="text" id="expiry" placeholder="MM/YY" required
                    style="width: 50%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
             
-            <input type="text" placeholder="CVV" required
+            <input type="text" id="cvv" placeholder="CVV" required
                    style="width: 50%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
         </div>
 
-        <button type="submit" id="buy-btn" style="width: 100%; margin-top: 20px;">
+        <button type="submit" style="width: 100%; margin-top: 20px; background: #B08D57; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
             Pay Now
         </button>
-
     </form>
 </div>
 
 <script src="{% static 'js/script.js' %}"></script>
-
+<script src="{% static 'js/cart.js' %}"></script>
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
+    // Wait for page to load
+    setTimeout(function() {
+        displayCheckoutSummary();
+    }, 200);
 
-    if (id && typeof booksData !== "undefined" && booksData[id]) {
-        const book = booksData[id];
+    function displayCheckoutSummary() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let total = 0;
+        let itemsHtml = '';
+
+        if (cart.length === 0) {
+            document.getElementById('summary').innerHTML = '<p>Your cart is empty. <a href="/">Continue Shopping</a></p>';
+            return;
+        }
+
+        for (let i = 0; i < cart.length; i++) {
+            const item = cart[i];
+            // Try to get book from booksData
+            let book = null;
+            if (typeof booksData !== 'undefined' && booksData[item.id]) {
+                book = booksData[item.id];
+            }
+            
+            if (book) {
+                const priceValue = parseFloat(item.price);
+                total += priceValue;
+                itemsHtml += `<p>${book.name || book.title} (${item.type === 'borrow' ? 'Borrow' : 'Buy'}): ${item.price} EGP</p>`;
+            } else {
+                itemsHtml += `<p>Book ID ${item.id} (${item.type === 'borrow' ? 'Borrow' : 'Buy'}): ${item.price} EGP</p>`;
+            }
+        }
 
         document.getElementById('summary').innerHTML = `
-            <h4 style="margin: 0;">${book.title}</h4>
-            <p style="margin: 5px 0; color: var(--color-medium);">
-                Total: <strong>${book.price}</strong>
-            </p>
+            <h4>Order Summary</h4>
+            ${itemsHtml}
+            <hr>
+            <strong>Total: ${total} EGP</strong>
         `;
     }
+
+    // Handle payment
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Purchase Successful! Thank you for shopping at Papyrus Hub.');
+        localStorage.removeItem('cart');
+        window.location.href = '/';
+    });
 </script>
 
 </body>
