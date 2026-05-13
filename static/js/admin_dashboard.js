@@ -1,74 +1,101 @@
 document.addEventListener("DOMContentLoaded", function () {
-
-    const savedUser = JSON.parse(localStorage.getItem("user"));
-    if (!savedUser || savedUser.isAdmin !== "true") {
-        alert("Access denied!");
-        window.location.href = "/login/";
-        return;
-    }
-
+    // Triggers active data pulls from the SQLite database as soon as layout loads
     renderBooks();
-    updateStats();
 });
 
 function renderBooks() {
-    const books = JSON.parse(localStorage.getItem("books")) || [];
-    const borrowedBooks = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
-    const tableBody = document.getElementById("bookTableBody");
-    tableBody.innerHTML = "";
+    const searchInput = document.getElementById("dashboardSearch");
+    const query = searchInput ? searchInput.value : "";
 
-    if (books.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6">No books available</td></tr>`;
-        return;
-    }
+    // Communicates asynchronously with the backend library app view layer instead of localStorage
+    fetch(`/api/books/?search=${encodeURIComponent(query)}`)
+        .then(response => {
+            if (response.status === 403) {
+                alert("Access denied. Admin validation rules unverified.");
+                window.location.href = "/login/";
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return;
+            const tableBody = document.getElementById("bookTableBody");
+            tableBody.innerHTML = "";
 
-    books.forEach(book => {
-        const isBorrowed = borrowedBooks.includes(book.id);
-        const status = isBorrowed ? "Borrowed" : "Available";
-        const statusClass = isBorrowed ? "tag-borrowed" : "tag-available";
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${book.id}</td>
-            <td>${book.name}</td>
-            <td>${book.author}</td>
-            <td>${book.category}</td>
-            <td><span class="status-tag ${statusClass}">${status}</span></td>
-            <td class="action-cell">
-                <button class="tbl-edit-btn" onclick="editBook('${book.id}')">Edit</button>
-                <button class="tbl-delete-btn" onclick="deleteBook('${book.id}')">Delete</button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+            if (data.books.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px 0;">No match metrics matching current context records found.</td></tr>`;
+                return;
+            }
+
+            // Loop database inventory response items directly into table layout row sets
+            data.books.forEach(book => {
+                const status = book.is_borrowed ? "Borrowed" : "Available";
+                const statusClass = book.is_borrowed ? "tag-borrowed" : "tag-available";
+                const row = document.createElement("tr");
+                
+                row.innerHTML = `
+                    <td><strong>#${book.id}</strong></td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category}</td>
+                    <td><span class="status-tag ${statusClass}">${status}</span></td>
+                    <td class="action-cell">
+                        <button class="tbl-edit-btn" onclick="editBook('${book.id}')">Edit</button>
+                        <button class="tbl-delete-btn" onclick="deleteBook('${book.id}')">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error("Error communicating with active API view database:", error));
+}
+
+// Hook dynamic on-input typing queries directly into input search bar layout element
+const searchInput = document.getElementById("dashboardSearch");
+if (searchInput) {
+    searchInput.addEventListener("input", renderBooks);
 }
 
 function deleteBook(id) {
-    if (!confirm("Are you sure you want to delete this book?")) return;
-    let books = JSON.parse(localStorage.getItem("books")) || [];
-    let borrowedBooks = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
-    books = books.filter(book => book.id !== id);
-    borrowedBooks = borrowedBooks.filter(b => b !== id);
-    localStorage.setItem("books", JSON.stringify(books));
-    localStorage.setItem("borrowedBooks", JSON.stringify(borrowedBooks));
-    renderBooks();
-    updateStats();
+    if (!confirm("Are you sure you want to permanently delete this book entry from Papyrus Hub?")) return;
+
+    // Direct database removal request using an asynchronous POST transmission loop
+    fetch(`/api/books/delete/${id}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"), // Django explicit CSRF cross-site protection wrapper
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Screen reload forces database calculations of numerical context counters to process instantly
+            window.location.reload(); 
+        } else {
+            alert("Error: " + (data.error || "Could not clear record."));
+        }
+    })
+    .catch(error => console.error("Transmission error inside backend processing routing:", error));
 }
 
+// Links cleanly to your teammate's dynamic primary key format: edit-book/<int:pk>/
 function editBook(id) {
-    window.location.href = `/edit-book/?id=${id}`;
+    window.location.href = `/edit-book/${id}/`;
 }
 
-function updateStats() {
-    const books = JSON.parse(localStorage.getItem("books")) || [];
-    const borrowedBooks = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    document.getElementById("totalBooks").innerText = books.length;
-    document.getElementById("borrowedCount").innerText = borrowedBooks.length;
-    document.getElementById("availableCount").innerText = books.length - borrowedBooks.length;
-    document.getElementById("userCount").innerText = users.length;
-}
-
-function logout() {
-    localStorage.removeItem("user");
-    window.location.href = "/login/";
+// Utility module wrapper extracting active cookie protection frameworks out of document layer
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }

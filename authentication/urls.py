@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # --- Authentication Paths ---
+    # --- Authentication Paths Only ---
     path(
         'login/',
         views.login_view,
@@ -27,23 +27,5 @@ urlpatterns = [
         'reset-password/',
         views.reset_password,
         name='reset_password'
-    ),
-
-    path(
-        'dashboard/', 
-        views.admin_dashboard, 
-        name='admin_dashboard'
-    ),
-    
-    path(
-        'api/books/', 
-        views.api_books_list, 
-        name='api_books_list'
-    ),
-    
-    path(
-        'api/books/delete/<int:book_id>/', 
-        views.delete_book, 
-        name='delete_book'
     ),
 ]
