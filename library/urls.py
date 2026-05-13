@@ -4,19 +4,14 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('cover/', views.cover, name='cover'),
-    path('login/', views.login, name='login'),
     path('logout/', views.logout_view, name='logout_view'),
-    path('signup/', views.signup, name='signup'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-books/', views.admin_books, name='admin_books'),
-    path('add-book/',views.add_book, name='add_book'),
-    path('edit-book/<int:pk>/', views.edit_book,name='edit_book'),
-    path('borrowed-books/', views.borrowed_books, name='borrowed_books'),  # ← أضف
-    path('book-details/', views.book_details, name='book_details'),        # ← أضف
-    path('checkout/', views.checkout, name='checkout'),                    # ← أضف
+    path('add-book/', views.add_book, name='add_book'),
+    path('edit-book/<int:pk>/', views.edit_book, name='edit_book'),
+    path('borrowed-books/', views.borrowed_books, name='borrowed_books'),
+    path('book-details/', views.book_details, name='book_details'),
+    path('checkout/', views.checkout, name='checkout'),
     path('api/stats/', views.api_stats, name='api_stats'),
     path('cart/', views.cart, name='cart'),
-#     path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
-#     path('remove-from-cart/', views.remove_from_cart, name='remove_from_cart'),
-#     path('my-orders/', views.my_orders, name='my_orders'),
 ]
