@@ -207,3 +207,59 @@ def reset_password(request):
         'authentication/reset_password.html',
         {'form': form}
     )
+@login_required
+def admin_dashboard(request):
+    if request.user.role != 'admin':
+        return render(request, 'authentication/logIN.html', {'error': 'Access denied!'})
+        
+    total_books = Book.objects.count()
+    borrowed_count = Book.objects.filter(is_borrowed=True).count()
+    available_count = total_books - borrowed_count
+    user_count = User.objects.filter(role='user').count()
+
+    context = {
+        'total_books': total_books,
+        'borrowed_count': borrowed_count,
+        'available_count': available_count,
+        'user_count': user_count,
+    }
+    return render(request, 'dashboard/admin_dashboard.html', context)
+
+@login_required
+def api_books_list(request):
+    if request.user.role != 'admin':
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    query = request.GET.get('search', '').strip()
+    books = Book.objects.all()
+
+    if query:
+        books = books.filter(
+            models.Q(title__icontains=query) |
+            models.Q(author__icontains=query) |
+            models.Q(category__icontains=query)
+        )
+
+    books_data = []
+    for book in books:
+        books_data.append({
+            'id': book.id,
+            'title': book.title,
+            'author': book.author,
+            'category': book.category,
+            'is_borrowed': book.is_borrowed,
+        })
+
+    return JsonResponse({'books': books_data})
+
+@login_required
+def delete_book(request, book_id):
+    if request.user.role != 'admin':
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    if request.method == 'POST':
+        book = get_object_or_404(Book, id=book_id)
+        book.delete()
+        return JsonResponse({'success': True, 'message': 'Book deleted successfully.'})
+        
+    return JsonResponse({'error': 'Invalid request method'}, status=400) 
