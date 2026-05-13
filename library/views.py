@@ -14,14 +14,6 @@ def cover(request):
     return render(request, 'index.html')
 
 
-def login(request):
-    return render(request, 'logIN.html')
-
-
-def signup(request):
-    return render(request, 'signup.html')
-
-
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
 
@@ -118,7 +110,7 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password')
     
-    return render(request, 'logIN.html')
+    return render(request, 'authentication/logIN.html')
 
 
 def signup_view(request):
@@ -131,7 +123,7 @@ def signup_view(request):
         
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists')
-            return render(request, 'signup.html')
+            return render(request, 'authentication/signup.html')
         
         user = User.objects.create_user(
             username=username,
@@ -146,7 +138,7 @@ def signup_view(request):
         messages.success(request, 'Account created successfully! Please login.')
         return redirect('login')
     
-    return render(request, 'signup.html')
+    return render(request, 'authentication/signup.html')
 
 
 def cart(request):
