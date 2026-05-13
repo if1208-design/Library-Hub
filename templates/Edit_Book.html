@@ -86,17 +86,5 @@
         <input type="submit" value="Update Book">
     </form>
 
-<script src="{% static 'js/add_edit.js' %}"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        if (typeof loadBook === "function") {
-            loadBook();
-        }
-
-        document.querySelector("form").addEventListener("submit", updateBook);
-    });
-</script>
-
 </body>
 </html>
