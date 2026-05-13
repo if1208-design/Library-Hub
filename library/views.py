@@ -3,8 +3,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from .models import Book, BorrowRecord
 from django.contrib.auth.decorators import login_required
+from django.db import models
+from datetime import date, timedelta
+
+from .models import Book, BorrowRecord
 
 
 def home(request):
@@ -25,12 +28,7 @@ def admin_dashboard(request):
 
 
 def admin_books(request):
-    return render(request, 'admin_available_books.html')
-
-
-def borrowed_books(request):
-    return render(request, 'borrowed-books.html')
-
+    return redirect('cover')
 
 
 def book_details(request, pk):
@@ -52,26 +50,25 @@ def checkout(request):
 
 def add_book(request):
     if request.method == 'POST':
-        
-        title      = request.POST.get('book_name')
-        author     = request.POST.get('author')
-        category   = request.POST.get('category')
-        desc       = request.POST.get('description')
-        copies     = request.POST.get('total_copies', 1)
-        price      = request.POST.get('price', 0)
+        title = request.POST.get('book_name')
+        author = request.POST.get('author')
+        category = request.POST.get('category')
+        desc = request.POST.get('description')
+        copies = int(request.POST.get('total_copies', 1))
+        price = request.POST.get('price', 0)
         borrow_fee = request.POST.get('borrow_fee', 0)
-        image      = request.FILES.get('cover_image')
+        image = request.FILES.get('cover_image')
 
         Book.objects.create(
-            title            = title,
-            author           = author,
-            category         = category,
-            description      = desc,
-            total_copies     = copies,
-            available_copies = copies,  
-            price            = price,
-            borrow_fee       = borrow_fee,
-            cover_image      = image,
+            title=title,
+            author=author,
+            category=category,
+            description=desc,
+            total_copies=copies,
+            available_copies=copies,
+            price=price,
+            borrow_fee=borrow_fee,
+            cover_image=image,
         )
         messages.success(request, f'"{title}" added successfully!')
         return redirect('admin_dashboard')
@@ -83,16 +80,16 @@ def edit_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
 
     if request.method == 'POST':
-        book.title       = request.POST.get('book_name')
-        book.author      = request.POST.get('author')
-        book.category    = request.POST.get('category')
+        book.title = request.POST.get('book_name')
+        book.author = request.POST.get('author')
+        book.category = request.POST.get('category')
         book.description = request.POST.get('description')
-        book.price       = request.POST.get('price', 0)
-        book.borrow_fee  = request.POST.get('borrow_fee', 0)
+        book.price = request.POST.get('price', 0)
+        book.borrow_fee = request.POST.get('borrow_fee', 0)
 
-        new_total             = int(request.POST.get('total_copies', book.total_copies))
-        diff                  = new_total - book.total_copies
-        book.total_copies     = new_total
+        new_total = int(request.POST.get('total_copies', book.total_copies))
+        diff = new_total - book.total_copies
+        book.total_copies = new_total
         book.available_copies = max(0, book.available_copies + diff)
 
         if request.FILES.get('cover_image'):
@@ -106,14 +103,13 @@ def edit_book(request, pk):
 
 
 def login_view(request):
-    """Handle actual login logic (POST request)"""
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         is_admin = request.POST.get('role') == 'true'
-        
+
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
             if is_admin == (user.is_superuser or user.is_staff):
                 auth_login(request, user)
@@ -125,35 +121,35 @@ def login_view(request):
                 messages.error(request, 'Invalid role selected')
         else:
             messages.error(request, 'Invalid username or password')
-    
+
     return render(request, 'authentication/logIN.html')
 
 
 def signup_view(request):
-    """Handle actual signup logic (POST request)"""
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
         is_admin = request.POST.get('Is_Admin') == 'true'
-        
+
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists')
             return render(request, 'authentication/signup.html')
-        
+
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password
         )
-        
+
         if is_admin:
             user.is_staff = True
+            user.is_superuser = True
             user.save()
-        
+
         messages.success(request, 'Account created successfully! Please login.')
         return redirect('login')
-    
+
     return render(request, 'authentication/signup.html')
 
 
@@ -172,6 +168,48 @@ def api_stats(request):
         'total_users': User.objects.count(),
     })
 
+
+@login_required
+def api_books_list(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    query = request.GET.get('search', '').strip()
+    books = Book.objects.all()
+
+    if query:
+        books = books.filter(
+            models.Q(title__icontains=query) |
+            models.Q(author__icontains=query) |
+            models.Q(category__icontains=query)
+        )
+
+    books_data = []
+    for book in books:
+        books_data.append({
+            'id': book.id,
+            'title': book.title,
+            'author': book.author,
+            'category': book.category,
+            'is_borrowed': book.available_copies == 0,
+        })
+
+    return JsonResponse({'books': books_data})
+
+
+@login_required
+def delete_book(request, book_id):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    if request.method == 'POST':
+        book = get_object_or_404(Book, id=book_id)
+        book.delete()
+        return JsonResponse({'success': True, 'message': 'Book deleted successfully.'})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
 @login_required
 def borrow_book(request, pk):
     if request.method != 'POST':
@@ -183,7 +221,6 @@ def borrow_book(request, pk):
     if not book.is_available():
         messages.error(request, f'No copies available for "{book.title}".')
         return redirect('book_details', pk=pk)
-    from datetime import date, timedelta
     BorrowRecord.objects.create(
         user=request.user, book=book,
         due_date=date.today() + timedelta(days=14),
@@ -203,7 +240,6 @@ def return_book(request, record_id):
     if record.status == 'returned':
         messages.info(request, 'Already returned.')
         return redirect('borrowed_books')
-    from datetime import date
     record.status = 'returned'
     record.return_date = date.today()
     record.save(update_fields=['status', 'return_date'])
@@ -215,11 +251,10 @@ def return_book(request, record_id):
 
 @login_required
 def borrowed_books(request):
-    from datetime import date
-    active   = BorrowRecord.objects.filter(user=request.user, status='borrowed').select_related('book')
+    active = BorrowRecord.objects.filter(user=request.user, status='borrowed').select_related('book')
     returned = BorrowRecord.objects.filter(user=request.user, status='returned').select_related('book')
     return render(request, 'borrowed-books.html', {
-        'active_records':   active,
+        'active_records': active,
         'returned_records': returned,
-        'today':            date.today(),
+        'today': date.today(),
     })
