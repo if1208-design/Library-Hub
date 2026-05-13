@@ -74,7 +74,7 @@ def add_book(request):
             cover_image      = image,
         )
         messages.success(request, f'"{title}" added successfully!')
-        return redirect('admin_books')
+        return redirect('admin_dashboard')
 
     return render(request, 'Add_Book.html')
 
@@ -100,7 +100,7 @@ def edit_book(request, pk):
 
         book.save()
         messages.success(request, f'"{book.title}" updated!')
-        return redirect('admin_books')
+        return redirect('admin_dashboard')
 
     return render(request, 'Edit_Book.html', {'book': book})
 
