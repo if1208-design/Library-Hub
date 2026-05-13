@@ -32,8 +32,7 @@
                     <option value="author" {% if searchFilter == "author" %}selected{% endif %}>Author</option>
                     <option value="category" {% if searchFilter == "category" %}selected{% endif %}>Category</option>
                 </select>
-                <input type="text" name="q" placeholder="Search books..." value="{{ query|default:'' }}" class="search-input">
-                <button type="submit" class="search-button">Search</button>
+                <input type="text" name="q" id="searchInput" placeholder="Search books..." value="{{ query|default:'' }}">
             </div>
         </form>
     </div>
