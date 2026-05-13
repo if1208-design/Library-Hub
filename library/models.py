@@ -65,6 +65,18 @@ class Book(models.Model):
 
     def is_available(self):
         return self.available_copies > 0
+    
+    isEbook = models.BooleanField(default=False, verbose_name= "E-book Available")
+    ebookFile = models.FileField(upload_to='ebooks/',null=True,blank=True, verbose_name= "E-book File")#null for db and blank for forms
+    def ebookAvailable(self):
+            return self.isEbook and self.ebookFile
+        
+    def checkEbookFile(self):
+        from django.core.exceptions import ValidationError
+        if self.isEbook and not self.ebookFile:
+            raise ValidationError("Book marked as E-book available but file not found")
+
+
 
 
 class BorrowRecord(models.Model):

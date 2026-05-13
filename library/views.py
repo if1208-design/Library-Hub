@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import Book, BorrowRecord
+from django.http import HttpResponse
+from django.http import Http404,FileResponse
 
 
 def home(request):
@@ -11,7 +13,46 @@ def home(request):
 
 
 def cover(request):
-    return render(request, 'index.html')
+    # get search query and the search filter from the URL
+    query = request.GET.get('q', '').strip()
+    search_filter = request.GET.get('search_filter', 'title') # default search by title
+    
+    # get all books initially
+    books = Book.objects.all()
+    
+    if query:
+        if search_filter == 'title':
+            books = books.filter(title__icontains=query) # -contains is case insensitive
+        elif search_filter == 'author':
+            books = books.filter(author__icontains=query)
+        elif search_filter == 'category':
+            matching_keys = [
+                key for key, label in Book.CATEGORY_CHOICES 
+                if query.lower() in label.lower() or query.lower() in key.lower()
+            ]
+            books = books.filter(category__in=matching_keys)
+    # Debug print
+    print(f"Search query: '{query}'")
+    print(f"Search filter: {search_filter}")
+    print(f"Number of books found: {books.count()}")
+    for book in books:
+        print(f"  - {book.title}")
+
+    categories = {}
+    for book in books:
+        cat_name = dict(Book.CATEGORY_CHOICES).get(book.category, book.category)
+        if cat_name not in categories:
+            categories[cat_name] = []
+        categories[cat_name].append(book)
+        
+
+    filtered_results = {
+        'books': books,
+        'query': query if query else None, # Ensures empty input registers as no query active
+        'searchFilter': search_filter,
+        'categories': categories, 
+    }
+    return render(request, 'index.html', filtered_results)
 
 
 def admin_dashboard(request):
@@ -155,3 +196,9 @@ def api_stats(request):
         'total_books': Book.objects.count(),
         'total_users': User.objects.count(),
     })
+def ebook(request, book_id):
+    from django.shortcuts import get_object_or_404
+    book = get_object_or_404(Book, id= book_id)
+    if not book.ebookAvailable():
+        raise Http404("E-book not available")
+    return FileResponse( book.ebookFile, content_type='application/pdf', filename=f"{book.title}.pdf")
