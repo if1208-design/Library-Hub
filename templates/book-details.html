@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Book Details</title>
+    <title>{{ book.title }}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -12,66 +12,68 @@
     <nav>
         <div class="logo-container">
             <a href="{% url 'home' %}">
-                <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="Logo" class="site-logo">
+                <img src="{% static 'images/papyrus_hub_logo.png' %}" class="site-logo">
             </a>
         </div>
         <div class="nav-links">
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'borrowed_books' %}">Borrowed Books</a>
-            <a href="{% url 'cart' %}">🛒 Cart <span id="cart-count" style="display: none;">0</span></a>
         </div>
     </nav>
 </header>
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
 <div class="book-container">
     <div class="book-left">
-        <img id="bookImg" src="{% static 'images/default-book.png' %}" alt="Book Cover">
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+        {% else %}
+            <img src="{% static 'images/default-book.png' %}" alt="{{ book.title }}">
+        {% endif %}
     </div>
+
     <div class="book-right">
-        <h1 id="bookName">Loading...</h1>
-        <p class="author">By: <span id="bookAuthor"></span></p>
+        <h1>{{ book.title }}</h1>
+        <p class="author">By: <span>{{ book.author }}</span></p>
+
         <div class="info-grid">
-            <p><strong>ID:</strong> <span id="bookIdDisplay"></span></p>
-            <p><strong>Category:</strong> <span id="bookCategory"></span></p>
-            <p><strong>Price:</strong> <span id="bookPrice"></span></p>
-            <p><strong>Borrowing Fee:</strong> <span id="bookBorrowFee"></span></p>
+            <p><strong>Category:</strong> {{ book.get_category_display }}</p>
+            <p><strong>Available Copies:</strong> {{ book.available_copies }} / {{ book.total_copies }}</p>
+            <p><strong>Borrow Fee:</strong> ${{ book.borrow_fee }}</p>
         </div>
+
         <div class="description-box">
             <strong>Description:</strong>
-            <p id="bookDescription"></p>
+            <p>{{ book.description|default:"No description available." }}</p>
         </div>
+
         <div class="btns">
-            <button id="borrow-btn" onclick="handleBorrow()">📖 Borrow Now</button>
-            <button id="buy-btn" onclick="handleBuy()">💰 Buy Now</button>
-            <button id="add-to-cart-borrow" onclick="addToCartFromDetails('borrow')">🛒 Add to Cart (Borrow)</button>
-            <button id="add-to-cart-buy" onclick="addToCartFromDetails('buy')">🛒 Add to Cart (Buy)</button>
+            {% if user.is_authenticated %}
+                {% if already_borrowed %}
+                    <button disabled>Already Borrowed</button>
+                {% elif book.is_available %}
+                    <form method="post" action="{% url 'borrow_book' book.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">📖 Borrow Now</button>
+                    </form>
+                {% else %}
+                    <button disabled>No Copies Available</button>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}">
+                    <button>Log in to Borrow</button>
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <footer>&copy; 2026 Papyrus Hub - Where Knowledge Lives</footer>
 
-<script src="{% static 'js/script.js' %}"></script>
-<script src="{% static 'js/cart.js' %}"></script>
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const currentBookId = params.get('id');
-    let currentBook = null;
-
-    setTimeout(function() {
-        if (typeof booksData !== 'undefined' && booksData[currentBookId]) {
-            currentBook = booksData[currentBookId];
-        }
-    }, 100);
-
-    function addToCartFromDetails(type) {
-        if (!currentBook) {
-            alert('Book data loading... try again');
-            return;
-        }
-        var price = type === 'borrow' ? currentBook.fee : currentBook.price;
-        addToCart(currentBookId, type, price);
-    }
-</script>
 </body>
 </html>

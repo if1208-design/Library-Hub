@@ -10,8 +10,10 @@ urlpatterns = [
     path('add-book/', views.add_book, name='add_book'),
     path('edit-book/<int:pk>/', views.edit_book, name='edit_book'),
     path('borrowed-books/', views.borrowed_books, name='borrowed_books'),
-    path('book-details/', views.book_details, name='book_details'),
+    path('books/<int:pk>/', views.book_details, name='book_details'),
     path('checkout/', views.checkout, name='checkout'),
     path('api/stats/', views.api_stats, name='api_stats'),
     path('cart/', views.cart, name='cart'),
 ]
+path('books/<int:pk>/borrow/',        views.borrow_book,    name='borrow_book'),
+path('borrow/<int:record_id>/return/', views.return_book,   name='return_book'),

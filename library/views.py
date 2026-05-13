@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import Book, BorrowRecord
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -11,7 +12,12 @@ def home(request):
 
 
 def cover(request):
-    return render(request, 'index.html')
+    books_by_category = {}
+    for code, label in Book.CATEGORY_CHOICES:
+        books = Book.objects.filter(category=code)
+        if books.exists():
+            books_by_category[label] = books
+    return render(request, 'index.html', {'books_by_category': books_by_category})
 
 
 def admin_dashboard(request):
@@ -26,8 +32,18 @@ def borrowed_books(request):
     return render(request, 'borrowed-books.html')
 
 
-def book_details(request):
-    return render(request, 'book-details.html')
+
+def book_details(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    already_borrowed = False
+    if request.user.is_authenticated:
+        already_borrowed = BorrowRecord.objects.filter(
+            user=request.user, book=book, status='borrowed'
+        ).exists()
+    return render(request, 'book-details.html', {
+        'book': book,
+        'already_borrowed': already_borrowed,
+    })
 
 
 def checkout(request):
@@ -154,4 +170,56 @@ def api_stats(request):
     return JsonResponse({
         'total_books': Book.objects.count(),
         'total_users': User.objects.count(),
+    })
+
+@login_required
+def borrow_book(request, pk):
+    if request.method != 'POST':
+        return redirect('book_details', pk=pk)
+    book = get_object_or_404(Book, pk=pk)
+    if BorrowRecord.objects.filter(user=request.user, book=book, status='borrowed').exists():
+        messages.warning(request, f'You already borrowed "{book.title}".')
+        return redirect('book_details', pk=pk)
+    if not book.is_available():
+        messages.error(request, f'No copies available for "{book.title}".')
+        return redirect('book_details', pk=pk)
+    from datetime import date, timedelta
+    BorrowRecord.objects.create(
+        user=request.user, book=book,
+        due_date=date.today() + timedelta(days=14),
+        status='borrowed',
+    )
+    book.available_copies -= 1
+    book.save(update_fields=['available_copies'])
+    messages.success(request, f'You borrowed "{book.title}"!')
+    return redirect('borrowed_books')
+
+
+@login_required
+def return_book(request, record_id):
+    if request.method != 'POST':
+        return redirect('borrowed_books')
+    record = get_object_or_404(BorrowRecord, pk=record_id, user=request.user)
+    if record.status == 'returned':
+        messages.info(request, 'Already returned.')
+        return redirect('borrowed_books')
+    from datetime import date
+    record.status = 'returned'
+    record.return_date = date.today()
+    record.save(update_fields=['status', 'return_date'])
+    record.book.available_copies += 1
+    record.book.save(update_fields=['available_copies'])
+    messages.success(request, f'"{record.book.title}" returned!')
+    return redirect('borrowed_books')
+
+
+@login_required
+def borrowed_books(request):
+    from datetime import date
+    active   = BorrowRecord.objects.filter(user=request.user, status='borrowed').select_related('book')
+    returned = BorrowRecord.objects.filter(user=request.user, status='returned').select_related('book')
+    return render(request, 'borrowed-books.html', {
+        'active_records':   active,
+        'returned_records': returned,
+        'today':            date.today(),
     })

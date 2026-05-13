@@ -88,3 +88,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # Media files (for uploaded images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+LOGIN_URL = '/cover/'
+LOGIN_REDIRECT_URL = '/cover/'
