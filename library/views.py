@@ -97,6 +97,8 @@ def add_book(request):
             price            = price,
             borrow_fee       = borrow_fee,
             cover_image      = image,
+            isEbook = request.POST.get('isEbook') == 'on',
+            ebookFile = request.FILES.get('ebookFile')
         )
         messages.success(request, f'"{title}" added successfully!')
         return redirect('admin_books')
@@ -122,6 +124,12 @@ def edit_book(request, pk):
 
         if request.FILES.get('cover_image'):
             book.cover_image = request.FILES['cover_image']
+
+        #so ebook label appears
+        new_pdf = request.FILES.get('ebookFile')
+        if new_pdf:
+            book.ebookFile = new_pdf
+            book.isEbook = True
 
         book.save()
         messages.success(request, f'"{book.title}" updated!')
@@ -201,4 +209,6 @@ def ebook(request, book_id):
     book = get_object_or_404(Book, id= book_id)
     if not book.ebookAvailable():
         raise Http404("E-book not available")
-    return FileResponse( book.ebookFile, content_type='application/pdf', filename=f"{book.title}.pdf")
+    response = FileResponse(book.ebookFile, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="{book.title}.pdf"'
+    return response

@@ -33,6 +33,7 @@
                     <option value="category" {% if searchFilter == "category" %}selected{% endif %}>Category</option>
                 </select>
                 <input type="text" name="q" id="searchInput" placeholder="Search books..." value="{{ query|default:'' }}">
+            <button type="submit">Search</button>
             </div>
         </form>
     </div>
@@ -54,8 +55,11 @@
                                     {% endif %}
                                     <p>{{ book.title }}<br><small>by {{ book.author }}</small></p>
                                 </a>
+                                {% if book.ebookAvailable %}
+                                    <div class="hasEbookLabel">E-book Available!</div>
+                                {% endif %}
                             </div>
-                        {% endfor %}
+                            {% endfor %}
                     </div>
                 {% endif %}
             {% endfor %}
