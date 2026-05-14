@@ -65,6 +65,13 @@ class Book(models.Model):
 
     def is_available(self):
         return self.available_copies > 0
+    
+    isEbook = models.BooleanField(default=False, verbose_name= "E-book Available")
+    ebookFile = models.FileField(upload_to='ebooks/',null=True,blank=True, verbose_name= "E-book File")#null for db and blank for forms
+    def ebookAvailable(self):
+            return bool(self.ebookFile)
+
+
 
 
 class BorrowRecord(models.Model):

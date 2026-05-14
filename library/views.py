@@ -8,6 +8,8 @@ from django.db import models
 from datetime import date, timedelta
 
 from .models import Book, BorrowRecord
+from django.http import HttpResponse
+from django.http import Http404,FileResponse
 
 
 def home(request):
@@ -15,6 +17,46 @@ def home(request):
 
 
 def cover(request):
+    # get search query and the search filter from the URL
+    query = request.GET.get('q', '').strip()
+    search_filter = request.GET.get('search_filter', 'title') # default search by title
+    
+    # get all books initially
+    books = Book.objects.all()
+    
+    if query:
+        if search_filter == 'title':
+            books = books.filter(title__icontains=query) # -contains is case insensitive
+        elif search_filter == 'author':
+            books = books.filter(author__icontains=query)
+        elif search_filter == 'category':
+            matching_keys = [
+                key for key, label in Book.CATEGORY_CHOICES 
+                if query.lower() in label.lower() or query.lower() in key.lower()
+            ]
+            books = books.filter(category__in=matching_keys)
+    # Debug print
+    print(f"Search query: '{query}'")
+    print(f"Search filter: {search_filter}")
+    print(f"Number of books found: {books.count()}")
+    for book in books:
+        print(f"  - {book.title}")
+
+    categories = {}
+    for book in books:
+        cat_name = dict(Book.CATEGORY_CHOICES).get(book.category, book.category)
+        if cat_name not in categories:
+            categories[cat_name] = []
+        categories[cat_name].append(book)
+        
+
+    filtered_results = {
+        'books': books,
+        'query': query if query else None, # Ensures empty input registers as no query active
+        'searchFilter': search_filter,
+        'categories': categories, 
+    }
+    return render(request, 'index.html', filtered_results)
     books_by_category = {}
     for code, label in Book.CATEGORY_CHOICES:
         books = Book.objects.filter(category=code)
@@ -60,15 +102,17 @@ def add_book(request):
         image = request.FILES.get('cover_image')
 
         Book.objects.create(
-            title=title,
-            author=author,
-            category=category,
-            description=desc,
-            total_copies=copies,
-            available_copies=copies,
-            price=price,
-            borrow_fee=borrow_fee,
-            cover_image=image,
+            title            = title,
+            author           = author,
+            category         = category,
+            description      = desc,
+            total_copies     = copies,
+            available_copies = copies,  
+            price            = price,
+            borrow_fee       = borrow_fee,
+            cover_image      = image,
+            isEbook = request.POST.get('isEbook') == 'on',
+            ebookFile = request.FILES.get('ebookFile')
         )
         messages.success(request, f'"{title}" added successfully!')
         return redirect('admin_dashboard')
@@ -94,6 +138,12 @@ def edit_book(request, pk):
 
         if request.FILES.get('cover_image'):
             book.cover_image = request.FILES['cover_image']
+
+        #so ebook label appears
+        new_pdf = request.FILES.get('ebookFile')
+        if new_pdf:
+            book.ebookFile = new_pdf
+            book.isEbook = True
 
         book.save()
         messages.success(request, f'"{book.title}" updated!')
@@ -258,3 +308,12 @@ def borrowed_books(request):
         'returned_records': returned,
         'today': date.today(),
     })
+
+def ebook(request, book_id):
+    from django.shortcuts import get_object_or_404
+    book = get_object_or_404(Book, id= book_id)
+    if not book.ebookAvailable():
+        raise Http404("E-book not available")
+    response = FileResponse(book.ebookFile, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="{book.title}.pdf"'
+    return response
