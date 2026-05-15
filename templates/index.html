@@ -22,35 +22,77 @@
     </nav>
 </header>
 
-<h1>Welcome to Papyrus Hub</h1>
+    <h1>Welcome to Papyrus Hub</h1>
 
-<div class="search-section">
-    <div class="search-box">
-        <form method="get" action="{% url 'cover' %}">
-            <input type="text" name="q" value="{{ query }}"
-                   placeholder="Search by book title or author...">
+    <div class="search-section">
+        <form method="GET" action="{% url 'cover' %}">
+            <div class="search-box">
+                <select name="search_filter" class="search-dropdown">
+                    <option value="title" {% if searchFilter == "title" %}selected{% endif %}>Title</option>
+                    <option value="author" {% if searchFilter == "author" %}selected{% endif %}>Author</option>
+                    <option value="category" {% if searchFilter == "category" %}selected{% endif %}>Category</option>
+                </select>
+                <input type="text" name="q" id="searchInput" placeholder="Search books..." value="{{ query|default:'' }}">
             <button type="submit">Search</button>
+            </div>
         </form>
     </div>
-</div>
 
-{% for category_label, books in books_by_category.items %}
-<h2 class="category-title">{{ category_label }}</h2>
-<div class="gallery">
-    {% for book in books %}
-    <a href="{% url 'book_details' book.pk %}">
-        {% if book.cover_image %}
-            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+    <div id="main-content-area">
+        {% if query %}
+            <h2>Search Results for "{{ query }}" ({{ books|length }} books)</h2>
+            {% for category, books in categories.items %}
+                {% if books %}
+                    <h3 class="category-title">{{ category }}</h3>
+                    <div class="gallery">
+                        {% for book in books %}
+                            <div class="book-item">
+                                <a href="{% url 'book_details' %}?id={{ book.id }}">
+                                    {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default-book.jpg' %}" alt="{{ book.title }}">
+                                    {% endif %}
+                                    <p>{{ book.title }}<br><small>by {{ book.author }}</small></p>
+                                </a>
+                                {% if book.ebookAvailable %}
+                                    <div class="hasEbookLabel">E-book Available!</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if not categories %}
+                <p>No books found matching your search.</p>
+            {% endif %}
         {% else %}
-            <img src="{% static 'images/default-book.png' %}" alt="{{ book.title }}">
+            <h2 class="category-title">Fiction</h2>
+            <div class="gallery">
+                <a href="{% url 'book_details' %}?id=1"><img src="{% static 'images/book1.jpeg' %}"></a>
+                <a href="{% url 'book_details' %}?id=3"><img src="{% static 'images/book3.jpeg' %}"></a>
+                <a href="{% url 'book_details' %}?id=4"><img src="{% static 'images/book4.jpeg' %}"></a>
+                <a href="{% url 'book_details' %}?id=2"><img src="{% static 'images/book2.jpeg' %}"></a>
+            </div>
+
+            <h2 class="category-title">Psychology & Self-help</h2>
+            <div class="gallery">
+                <a href="{% url 'book_details' %}?id=6"><img src="{% static 'images/book6.jpeg' %}"></a>
+                <a href="{% url 'book_details' %}?id=7"><img src="{% static 'images/book7.jpg' %}"></a>
+                <a href="{% url 'book_details' %}?id=8"><img src="{% static 'images/book8.jpg' %}"></a>
+            </div>
+
+            <h2 class="category-title">Science & Productivity</h2>
+            <div class="gallery">
+                <a href="{% url 'book_details' %}?id=5"><img src="{% static 'images/book5.jpeg' %}"></a>
+            </div>
+
+            <h2 class="category-title">History & Religion</h2>
+            <div class="gallery">
+                <a href="{% url 'book_details' %}?id=13"><img src="{% static 'images/book13.jpg' %}"></a>
+            </div>
         {% endif %}
-        <p>{{ book.title }}</p>
-    </a>
-    {% endfor %}
-</div>
-{% empty %}
-<p>No books in the library yet.</p>
-{% endfor %}
+    </div>
 
 <footer>
     <p>&copy; 2026 Papyrus Hub - Where Knowledge Lives</p>

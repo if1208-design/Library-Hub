@@ -14,6 +14,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('api/stats/', views.api_stats, name='api_stats'),
     path('cart/', views.cart, name='cart'),
-]
+     path('read-ebook/<int:book_id>/', views.ebook, name='read_ebook'),
 path('books/<int:pk>/borrow/',        views.borrow_book,    name='borrow_book'),
-path('borrow/<int:record_id>/return/', views.return_book,   name='return_book'),
+path('borrow/<int:record_id>/return/', views.return_book,   name='return_book'),]

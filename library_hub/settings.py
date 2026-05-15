@@ -85,6 +85,9 @@ USE_TZ = True
 STATIC_URL = '/static/'  # ← FIXED: added leading slash
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+#create media directories if they don't exist
+import os
+
 # Media files (for uploaded images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -92,3 +95,16 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_URL = '/cover/'
 LOGIN_REDIRECT_URL = '/cover/'
+MEDIA_DIRS = [
+    BASE_DIR / 'media',
+    BASE_DIR / 'media/covers',
+    BASE_DIR / 'media/ebooks',
+]
+
+for directory in MEDIA_DIRS:
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print(f"Created directory: {directory}")
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

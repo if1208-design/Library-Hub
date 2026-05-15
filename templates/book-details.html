@@ -50,6 +50,11 @@
         <div class="description-box">
             <strong>Description:</strong>
             <p>{{ book.description|default:"No description available." }}</p>
+            {% if book.ebookAvailable %}
+        <a href="{% url 'read_ebook' book.id %}" class="ebook-btn" target="_blank">
+        Read E-book Online!
+        </a>
+{% endif %}
         </div>
 
         <div class="btns">
