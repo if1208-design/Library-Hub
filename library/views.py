@@ -61,7 +61,8 @@ def cover(request):
         'searchFilter': search_filter,
         'categories': categories, 
     }
-    return render(request, 'index.html', filtered_results, {'books_by_category': books_by_category})
+    context = {**filtered_results, 'books_by_category': books_by_category}
+    return render(request, 'index.html', context)
 
 
 def admin_dashboard(request):

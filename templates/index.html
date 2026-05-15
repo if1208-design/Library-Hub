@@ -47,7 +47,7 @@
                     <div class="gallery">
                         {% for book in books %}
                             <div class="book-item">
-                                <a href="{% url 'book_details' %}?id={{ book.id }}">
+                                <a href="{% url 'book_details' pk=book.id %}">
                                     {% if book.cover_image %}
                                         <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
                                     {% else %}
@@ -67,29 +67,30 @@
                 <p>No books found matching your search.</p>
             {% endif %}
         {% else %}
-            <h2 class="category-title">Fiction</h2>
-            <div class="gallery">
-                <a href="{% url 'book_details' %}?id=1"><img src="{% static 'images/book1.jpeg' %}"></a>
-                <a href="{% url 'book_details' %}?id=3"><img src="{% static 'images/book3.jpeg' %}"></a>
-                <a href="{% url 'book_details' %}?id=4"><img src="{% static 'images/book4.jpeg' %}"></a>
-                <a href="{% url 'book_details' %}?id=2"><img src="{% static 'images/book2.jpeg' %}"></a>
-            </div>
+            
+        <h2 class="category-title">Fiction</h2>
+        <div class="gallery">
+            <a href="{% url 'book_details' pk=1 %}"><img src="{% static 'images/book1.jpeg' %}"></a>
+            <a href="{% url 'book_details' pk=3 %}"><img src="{% static 'images/book3.jpeg' %}"></a>
+            <a href="{% url 'book_details' pk=4 %}"><img src="{% static 'images/book4.jpeg' %}"></a>
+            <a href="{% url 'book_details' pk=2 %}"><img src="{% static 'images/book2.jpeg' %}"></a>
+        </div>
 
-            <h2 class="category-title">Psychology & Self-help</h2>
-            <div class="gallery">
-                <a href="{% url 'book_details' %}?id=6"><img src="{% static 'images/book6.jpeg' %}"></a>
-                <a href="{% url 'book_details' %}?id=7"><img src="{% static 'images/book7.jpg' %}"></a>
-                <a href="{% url 'book_details' %}?id=8"><img src="{% static 'images/book8.jpg' %}"></a>
-            </div>
+        <h2 class="category-title">Psychology & Self-help</h2>
+        <div class="gallery">
+            <a href="{% url 'book_details' pk=6 %}"><img src="{% static 'images/book6.jpeg' %}"></a>
+            <a href="{% url 'book_details' pk=7 %}"><img src="{% static 'images/book7.jpg' %}"></a>
+            <a href="{% url 'book_details' pk=8 %}"><img src="{% static 'images/book8.jpg' %}"></a>
+        </div>
 
             <h2 class="category-title">Science & Productivity</h2>
             <div class="gallery">
-                <a href="{% url 'book_details' %}?id=5"><img src="{% static 'images/book5.jpeg' %}"></a>
+                <a href="{% url 'book_details' pk=5 %} "><img src="{% static 'images/book5.jpeg' %}"></a>
             </div>
 
             <h2 class="category-title">History & Religion</h2>
             <div class="gallery">
-                <a href="{% url 'book_details' %}?id=13"><img src="{% static 'images/book13.jpg' %}"></a>
+                <a href="{% url 'book_details' pk=13 %}"><img src="{% static 'images/book13.jpg' %}"></a>
             </div>
         {% endif %}
     </div>
