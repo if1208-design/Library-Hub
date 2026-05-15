@@ -20,7 +20,7 @@
             <a href="{% url 'cover' %}">Browse Books</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'borrowed_books' %}">My Borrowed Books</a>
-                <a href="{% url 'logout_view' %}">Logout ({{ user.username }})</a>
+                <a href="{% url 'logout_view' %}" onclick="localStorage.removeItem('cart')">Logout ({{ user.username }})</a>
             {% endif %}
         </div>
     </nav>

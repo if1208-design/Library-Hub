@@ -36,7 +36,7 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'borrowed_books' %}">Borrowed Books</a>
                 <a href="{% url 'cart' %}">🛒 Cart</a>
-                <a href="{% url 'logout_view' %}">Logout</a>
+                <a href="{% url 'logout_view' %}" onclick="localStorage.removeItem('cart')">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
             {% endif %}
@@ -112,8 +112,8 @@
                 {% endif %}
 
                 <!-- BUY NOW BUTTON -->
-                <a href="{% url 'checkout' %}?book_id={{ book.id }}&book_title={{ book.title }}&price={{ book.price }}">
-                    <button type="button" class="btn-buy">🛒 Buy Now</button>
+                <a href="{% url 'checkout' %}?book_id={{ book.id }}&title={{ book.title }}&price={{ book.price }}&single=true">
+                       <button type="button" class="btn-buy">🛒 Buy Now</button>
                 </a>
 
                 <!-- ADD TO CART BUTTON -->

@@ -31,7 +31,7 @@
                 {% endif %}
                 <div class="user-menu">
                     <span class="user-greeting">👋 {{ user.username }}</span>
-                    <a href="{% url 'logout_view' %}" class="logout-btn">Logout</a>
+                    <a href="{% url 'logout_view' %}" onclick="localStorage.removeItem('cart')">Logout</a>
                 </div>
             {% else %}
                 <div class="auth-links">
