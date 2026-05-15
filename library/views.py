@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -65,8 +66,24 @@ def cover(request):
     return render(request, 'index.html', {'books_by_category': books_by_category})
 
 
+@login_required
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+    if not (request.user.is_staff or request.user.is_superuser):
+        return render(request, 'authentication/logIN.html', {'error': 'Access denied!'})
+
+    total_books     = Book.objects.aggregate(total=models.Sum('total_copies'))['total'] or 0
+    available_books = Book.objects.aggregate(available=models.Sum('available_copies'))['available'] or 0
+    borrowed_count  = max(0, total_books - available_books)
+    user_count      = User.objects.filter(is_staff=False, is_superuser=False).count()
+
+    context = {
+        'total_books':    total_books,
+        'borrowed_count': borrowed_count,
+        'available_count': available_books,
+        'user_count':     user_count,
+        'books':          Book.objects.all(),   # ← added this
+    }
+    return render(request, 'admin_dashboard.html', context)
 
 
 def admin_books(request):
@@ -85,9 +102,16 @@ def book_details(request, pk):
         'already_borrowed': already_borrowed,
     })
 
-
 def checkout(request):
-    return render(request, 'checkout.html')
+    book_id = request.GET.get('book_id')
+    book_title = request.GET.get('book_title')
+    price = request.GET.get('price')
+    
+    return render(request, 'checkout.html', {
+        'book_id': book_id,
+        'book_title': book_title,
+        'price': price,
+    })
 
 
 def add_book(request):
@@ -262,24 +286,57 @@ def delete_book(request, book_id):
 
 @login_required
 def borrow_book(request, pk):
-    if request.method != 'POST':
-        return redirect('book_details', pk=pk)
     book = get_object_or_404(Book, pk=pk)
+
+    # check if already borrowed
     if BorrowRecord.objects.filter(user=request.user, book=book, status='borrowed').exists():
         messages.warning(request, f'You already borrowed "{book.title}".')
         return redirect('book_details', pk=pk)
+
     if not book.is_available():
         messages.error(request, f'No copies available for "{book.title}".')
         return redirect('book_details', pk=pk)
-    BorrowRecord.objects.create(
-        user=request.user, book=book,
-        due_date=date.today() + timedelta(days=14),
-        status='borrowed',
-    )
-    book.available_copies -= 1
-    book.save(update_fields=['available_copies'])
-    messages.success(request, f'You borrowed "{book.title}"!')
-    return redirect('borrowed_books')
+
+    if request.method == 'POST':
+        due_date_str = request.POST.get('due_date')
+
+        # validate due date
+        try:
+            due_date = date.fromisoformat(due_date_str)
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid return date.')
+            return redirect('borrow_book', pk=pk)
+
+        if due_date <= date.today():
+            messages.error(request, 'Return date must be after today.')
+            return redirect('borrow_book', pk=pk)
+
+        if due_date > date.today() + timedelta(days=30):
+            messages.error(request, 'Maximum borrow period is 30 days.')
+            return redirect('borrow_book', pk=pk)
+
+        # create the borrow record
+        BorrowRecord.objects.create(
+            user=request.user,
+            book=book,
+            due_date=due_date,
+            status='borrowed',
+        )
+        book.available_copies -= 1
+        book.save(update_fields=['available_copies'])
+        messages.success(request, f'You borrowed "{book.title}"! Due back by {due_date.strftime("%b %d, %Y")}.')
+        return redirect('borrowed_books')
+
+    # GET — show the borrow form
+    today    = date.today()
+    min_due  = today + timedelta(days=1)
+    max_date = today + timedelta(days=30)
+    return render(request, 'borrow_form.html', {
+        'book':     book,
+        'today':    today,
+        'min_due':  min_due,
+        'max_date': max_date,
+    })
 
 
 @login_required

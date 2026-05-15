@@ -22,21 +22,37 @@ def login_view(request):
     return render(request, 'authentication/logIN.html', {'form': form})
 
 def signup(request):
-    form = SignupForm(request.POST or None)
     if request.method == 'POST':
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            if User.objects.filter(username=username).exists():
-                form.add_error('username', 'Username already exists.')
-                return render(request, 'authentication/signup.html', {'form': form})
-            if User.objects.filter(email=email).exists():
-                form.add_error('email', 'Email already exists.')
-                return render(request, 'authentication/signup.html', {'form': form})
-            User.objects.create_user(username=username, email=email, password=password, role='user')
-            return redirect('login')
-    return render(request, 'authentication/signup.html', {'form': form})
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        role = request.POST.get('role', 'user')
+
+        # validation
+        if password != confirm_password:
+            return render(request, 'authentication/signup.html', {'error': 'Passwords do not match.'})
+
+        if User.objects.filter(username=username).exists():
+            return render(request, 'authentication/signup.html', {'error': 'Username already exists.'})
+
+        if User.objects.filter(email=email).exists():
+            return render(request, 'authentication/signup.html', {'error': 'Email already exists.'})
+
+        # create user
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            role=role,
+        )
+        if role == 'admin':
+            user.is_staff = True
+            user.save()
+
+        return redirect('login')
+
+    return render(request, 'authentication/signup.html')
 
 def request_reset_code(request):
     if request.method == 'POST':

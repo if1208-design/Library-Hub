@@ -13,9 +13,9 @@ function updateCartCount() {
     }
 }
 
-function addToCart(bookId, type, price) {
+function addToCart(bookId, title, price) {
     const existing = cart.find(function(item) {
-        return item.id === bookId && item.type === type;
+        return item.id === bookId;
     });
     
     if (existing) {
@@ -25,12 +25,13 @@ function addToCart(bookId, type, price) {
     
     cart.push({
         id: bookId,
-        type: type,
+        title: title,   // ← now saves title directly
+        type: 'Buy',
         price: price
     });
     
     saveCart();
-    alert('Added to cart!');
+    alert('Added to cart! ✅');
 }
 
 function removeFromCart(index) {
@@ -56,17 +57,14 @@ function displayCart() {
     
     for (let i = 0; i < cart.length; i++) {
         const item = cart[i];
-        const book = booksData[item.id];
-        if (book) {
-            const priceValue = parseFloat(item.price);
-            total = total + priceValue;
-            html = html + '<tr>' +
-                '<td>' + (book.name || book.title) + '</td>' +
-                '<td>' + (item.type === 'borrow' ? 'Borrow' : 'Buy') + '</td>' +
-                '<td>' + item.price + ' EGP' + '</td>' +
-                '<td><button onclick="removeFromCart(' + i + ')">Remove</button>' + '</td>' +
-                '</tr>';
-        }
+        const priceValue = parseFloat(item.price);
+        total = total + priceValue;
+        html = html + '<tr>' +
+            '<td>' + item.title + '</td>' +   // ← uses title directly
+            '<td>' + (item.type === 'borrow' ? 'Borrow' : 'Buy') + '</td>' +
+            '<td>' + item.price + ' EGP' + '</td>' +
+            '<td><button onclick="removeFromCart(' + i + ')">Remove</button></td>' +
+            '</tr>';
     }
     
     html = html + '</tbody></table>';

@@ -18,23 +18,22 @@
     </nav>
 
     <div class="dashboard-main">
-        
+
         <aside class="dashboard-sidebar">
             <div class="brand-section">
                 <span class="brand-name">Papyrus Hub</span>
             </div>
-            
+
             <div class="admin-functions">
-                <a href="#" class="active-tab">Books Catalogue</a>
-                <a href="/add-book/">Add New Book</a>
+                <a href="{% url 'admin_dashboard' %}" class="active-tab">Books Catalogue</a>
+                <a href="{% url 'add_book' %}">Add New Book</a>
             </div>
-            
+
             <div class="user-status">
-                <span class="user-role">Logged in as: <strong>{{ request.user.username }}</strong></span>
-                <form action="{% url 'login' %}" method="POST" style="margin-top: 10px;">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-btn">Log Out</button>
-                </form>
+                <span class="user-role">Logged in as: <strong>{{ user.username }}</strong></span>
+                <a href="{% url 'logout_view' %}">
+                    <button type="button" class="logout-btn">Log Out</button>
+                </a>
             </div>
         </aside>
 
@@ -64,7 +63,8 @@
 
             <div class="catalogue-header">
                 <input type="text" id="dashboardSearch" placeholder="Search by title, author, or category...">
-                <button class="add-new-btn" onclick="window.location.href='/add-book/'">+ Add Book</button>
+                <a href="{% url 'add_book' %}"><button class="add-new-btn">+ Add Book</button></a>
+
             </div>
 
             <div class="table-container">
@@ -80,9 +80,32 @@
                         </tr>
                     </thead>
                     <tbody id="bookTableBody">
+                        {% for book in books %}
                         <tr>
-                            <td colspan="6" style="text-align: center; color: var(--warm-caramel);">Loading database entries...</td>
+                            <td>{{ book.id }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.get_category_display }}</td>
+                            <td>
+                                {% if book.available_copies > 0 %}
+                                    <span style="color: green;">Available ({{ book.available_copies }})</span>
+                                {% else %}
+                                    <span style="color: red;">Fully Borrowed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'edit_book' book.pk %}">Edit</a>
+                                <form method="post" action="{% url 'delete_book' book.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" onclick="return confirm('Delete this book?')">Delete</button>
+                                </form>
+                            </td>
                         </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">No books in the database yet.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
