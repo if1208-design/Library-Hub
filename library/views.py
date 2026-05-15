@@ -18,6 +18,11 @@ def home(request):
 
 
 def cover(request):
+    books_by_category = {}
+    for code, label in Book.CATEGORY_CHOICES:
+        books = Book.objects.filter(category=code)
+        if books.exists():
+            books_by_category[label] = books
     # get search query and the search filter from the URL
     query = request.GET.get('q', '').strip()
     search_filter = request.GET.get('search_filter', 'title') # default search by title
