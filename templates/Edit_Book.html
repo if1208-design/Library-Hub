@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Book</title>
+    <link rel="stylesheet" href="{% static 'css/add_edit.css' %}">
+</head>
+
+<body>
+    <header>
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="logo">
+        </a>
+        <nav>
+            <a href="{% url 'admin_books' %}">Available Books</a>
+            <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+            <a href="{% url 'add_book' %}">Add</a>
+        </nav>
+    </header>
+
+    <h2>Edit Book</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="msg">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="field">
+                <label>Book Name:</label>
+                <!-- {{ book.title }} fills this field with current book name -->
+                <input type="text" name="book_name" value="{{ book.title }}" required>
+            </div>
+            <div class="field">
+                <label>Author:</label>
+                <input type="text" name="author" value="{{ book.author }}" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Category:</label>
+                <select name="category">
+                    <option value="fiction"     {% if book.category == 'fiction' %}selected{% endif %}>Fiction</option>
+                    <option value="psychology"  {% if book.category == 'psychology' %}selected{% endif %}>Psychology & Self-help</option>
+                    <option value="science"     {% if book.category == 'science' %}selected{% endif %}>Science & Productivity</option>
+                    <option value="history"     {% if book.category == 'history' %}selected{% endif %}>History & Religion</option>
+                    <option value="technology"  {% if book.category == 'technology' %}selected{% endif %}>Technology</option>
+                    <option value="literature"  {% if book.category == 'literature' %}selected{% endif %}>Literature</option>
+                    <option value="children"    {% if book.category == 'children' %}selected{% endif %}>Children</option>
+                    <option value="other"       {% if book.category == 'other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Total Copies:</label>
+                <input type="number" name="total_copies" value="{{ book.total_copies }}" min="1">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Price:</label>
+                <input type="number" name="price" step="0.01" value="{{ book.price }}">
+            </div>
+            <div class="field">
+                <label>Borrow Fee:</label>
+                <input type="number" name="borrow_fee" step="0.01" value="{{ book.borrow_fee }}">
+            </div>
+        </div>
+
+        <label>Description:</label>
+        <textarea name="description" rows="4">{{ book.description }}</textarea>
+
+        <label>Cover Image:</label>
+        <!-- show current image if exists -->
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" width="100"><br>
+            <small>Upload new image to replace</small><br>
+        {% endif %}
+        <input type="file" name="cover_image" accept="image/*">
+
+        <div class="field" id="ebookFileSection"name="isEbook" id="isEbook">
+            <label>Upload E-book (PDF):</label>
+            <input type="file" name="ebookFile" accept="application/pdf">
+        </div>
+
+        <input type="submit" value="Update Book">
+    </form>
+
+</body>
+</html>

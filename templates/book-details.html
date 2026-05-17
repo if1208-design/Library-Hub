@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }} — Library Hub</title>
+    <link rel="stylesheet" href="{% static 'css/library.css' %}">
+</head>
+
+<script src="{% static 'js/cart.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartBtn = document.getElementById('add-to-cart-button');
+        if (cartBtn) {
+            cartBtn.addEventListener('click', function() {
+                addToCart(this.dataset.bookId, this.dataset.bookTitle, this.dataset.bookPrice);
+            });
+        }
+    });
+</script>
+
+<body>
+<header>
+    <nav>
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/papyrus_hub_logo.png' %}" class="site-logo" alt="Library Hub">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'borrowed_books' %}">Borrowed Books</a>
+                <a href="{% url 'cart' %}">🛒 Cart</a>
+                <a href="{% url 'logout_view' %}" onclick="localStorage.removeItem('cart')">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="book-container">
+    <div class="book-left">
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+        {% else %}
+            <img src="{% static 'images/default-book.png' %}" alt="{{ book.title }}">
+        {% endif %}
+    </div>
+
+    <div class="book-right">
+        <h1>{{ book.title }}</h1>
+        <p class="author">By: <span>{{ book.author }}</span></p>
+
+        <div class="info-grid">
+            <p><strong>Category:</strong> {{ book.get_category_display }}</p>
+            <p><strong>Borrow Fee:</strong> ${{ book.borrow_fee }}</p>
+            <p><strong>Price:</strong> ${{ book.price }}</p>
+            {% if user.is_staff or user.is_superuser %}
+                <p><strong>Available Copies:</strong> {{ book.available_copies }} / {{ book.total_copies }}</p>
+            {% endif %}
+            {% if not user.is_staff and not user.is_superuser %}
+                {% if book.available_copies > 0 %}
+                    <p class="available-tag">✅ Available</p>
+                {% else %}
+                    <p class="unavailable-tag">❌ Not Available</p>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="description-box">
+            <strong>Description</strong>
+            <p>{{ book.description|default:"No description available." }}</p>
+            {% if book.ebookAvailable %}
+                <a href="{% url 'read_ebook' book.id %}" class="ebook-btn" target="_blank">📖 Read E-book Online</a>
+            {% endif %}
+        </div>
+
+        <div class="btns">
+            {% if book.available_copies > 0 %}
+                {% if user.is_authenticated %}
+                    {% if already_borrowed %}
+                        <button disabled class="btn-disabled">Already Borrowed</button>
+                    {% else %}
+                        <a href="{% url 'borrow_book' book.pk %}">
+                            <button type="button" class="btn-borrow">📖 Borrow Now</button>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}"><button class="btn-borrow">Log in to Borrow</button></a>
+                {% endif %}
+                <a href="{% url 'checkout' %}?book_id={{ book.id }}&title={{ book.title }}&price={{ book.price }}&single=true">
+                    <button type="button" class="btn-buy">🛒 Buy Now</button>
+                </a>
+                {% if user.is_authenticated %}
+                    <button type="button" class="btn-cart" id="add-to-cart-button"
+                            data-book-id="{{ book.id }}"
+                            data-book-title="{{ book.title|escape }}"
+                            data-book-price="{{ book.price }}">
+                        ➕ Add to Cart
+                    </button>
+                {% endif %}
+            {% else %}
+                <button disabled class="btn-disabled">❌ Not Available</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<footer>&copy; 2026 Papyrus Hub — Where Knowledge Lives</footer>
+</body>
+</html>

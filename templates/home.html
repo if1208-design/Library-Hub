@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Papyrus Hub | Home{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cover.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-card">
+            <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="Library" class="hero-img">
+            <div class="hero-text">
+                <h2>Explore Ancient Wisdom</h2>
+                <p>Where every book opens a new world of knowledge</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'cover' %}" class="btn-primary">Explore Books</a>
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'signup' %}" class="btn-secondary">Join Now</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Grid -->
+    <section class="info-grid">
+        <div class="info-box">
+            <h3>📋 Project Info</h3>
+            <p><strong>Supervised by:</strong> Dr. Aliaa Magdy</p>
+            <p><strong>Group:</strong> Library Hub Team</p>
+        </div>
+        <div class="info-box">
+            <h3>📖 Library Status</h3>
+            <p>Open for Research & Learning</p>
+            <p>📍 24/7 Digital Access</p>
+        </div>
+        <div class="info-box">
+            <h3>📚 Available Resources</h3>
+            <p>Books, references, and digital reading materials.</p>
+            <p>➕ New books added weekly</p>
+        </div>
+        <div class="info-box">
+            <h3>👥 User Access</h3>
+            <p>Browse, borrow, and manage your reading journey easily.</p>
+            {% if user.is_authenticated %}
+                <p style="color: green; margin-top: 10px;">✅ Logged in as: {{ user.username }}</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title">Why Choose Papyrus Hub?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>📚 Rich Collection</h3>
+                <p>Explore a wide range of academic and general books in one place.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ Easy Navigation</h3>
+                <p>Quickly browse categories, view details, and manage borrowing.</p>
+            </div>
+            <div class="feature-card">
+                <h3>👩‍💻 Student Friendly</h3>
+                <p>Designed to help students access knowledge faster and easier.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote Section -->
+    <section class="quote-section">
+        <div class="quote-box">
+            <h2>"A library is a gateway to imagination."</h2>
+            <p>Read. Learn. Grow.</p>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/cover.js' %}"></script>
+{% endblock %}

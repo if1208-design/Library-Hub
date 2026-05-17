@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Borrowed Books — Library Hub</title>
+    <link rel="stylesheet" href="{% static 'css/library.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/papyrus_hub_logo.png' %}" class="site-logo" alt="Library Hub">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'cover' %}">Browse Books</a>
+            <a href="{% url 'borrowed_books' %}">My Borrowed Books</a>
+            <a href="{% url 'logout_view' %}">Logout</a>
+        </div>
+    </nav>
+</header>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="borrowed-page">
+
+    <div class="page-header">
+        <h1>My Borrowed Books</h1>
+        <p>Manage your current and past borrows</p>
+    </div>
+
+    <div class="section-title">📖 Currently Borrowed</div>
+
+    {% for record in active_records %}
+    <div class="record-card">
+        {% if record.book.cover_image %}
+            <img src="{{ record.book.cover_image.url }}" alt="{{ record.book.title }}">
+        {% else %}
+            <img src="{% static 'images/default-book.png' %}" alt="{{ record.book.title }}">
+        {% endif %}
+        <div class="record-info">
+            <h3>{{ record.book.title }}</h3>
+            <p>By {{ record.book.author }}</p>
+            <div class="record-meta">
+                <span class="meta-item">📅 Borrowed: {{ record.borrow_date }}</span>
+                <span class="meta-item">⏳ Due: {{ record.due_date }}</span>
+                {% if record.is_overdue %}
+                    <span class="overdue-badge">⚠ OVERDUE</span>
+                {% endif %}
+            </div>
+            <form method="post" action="{% url 'return_book' record.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="return-btn">↩ Return Book</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-msg">You have no books currently borrowed.</div>
+    {% endfor %}
+
+    <div class="section-title">✅ Previously Returned</div>
+
+    {% for record in returned_records %}
+    <div class="returned-card">
+        {% if record.book.cover_image %}
+            <img src="{{ record.book.cover_image.url }}" alt="{{ record.book.title }}"
+                 style="width:50px;height:65px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+        {% else %}
+            <img src="{% static 'images/default-book.png' %}" alt="{{ record.book.title }}"
+                 style="width:50px;height:65px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+        {% endif %}
+        <div>
+            <h3>{{ record.book.title }}</h3>
+            <p>By {{ record.book.author }}</p>
+            <p>Returned on {{ record.return_date }}</p>
+        </div>
+        <span class="returned-badge">✓ Returned</span>
+    </div>
+    {% empty %}
+    <div class="empty-msg">No return history yet.</div>
+    {% endfor %}
+
+</div>
+
+<footer>&copy; 2026 Papyrus Hub — Where Knowledge Lives</footer>
+</body>
+</html>

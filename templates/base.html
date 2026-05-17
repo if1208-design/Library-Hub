@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Papyrus Hub Library{% endblock %}</title>
+    
+     <link rel="stylesheet" href="{% static 'css/global.css' %}"> 
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="global-navbar">
+    <div class="nav-container">
+        <div class="nav-logo">
+            <a href="{% url 'cover' %}">
+                <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="Papyrus Hub">
+            </a>
+            <span class="brand-text">Papyrus Hub</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="{% url 'cover' %}" class="nav-link">Home</a>
+            <a href="{% url 'cover' %}" class="nav-link">Browse Books</a>            <a href="{% url 'cart' %}" class="nav-link">🛒 Cart <span id="cart-count" style="display: none;">0</span></a>
+            
+            {% if user.is_authenticated %}
+                {% if user.is_staff or user.is_superuser %}
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'admin_books' %}" class="nav-link">Manage Books</a>
+                {% endif %}
+                <div class="user-menu">
+                    <span class="user-greeting">👋 {{ user.username }}</span>
+                    <a href="{% url 'logout_view' %}" onclick="localStorage.removeItem('cart')">Logout</a>
+                </div>
+            {% else %}
+                <div class="auth-links">
+                    <a href="{% url 'login' %}" class="login-link">Login</a>
+                    <a href="{% url 'signup' %}" class="signup-link">Sign Up</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="global-footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h4>Papyrus Hub</h4>
+            <p>Where knowledge lives forever</p>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="{% url 'cover' %}">Home</a></li>
+                <li><a href="{% url 'home' %}">Browse Books</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <p>📧 info@papyrushub.com</p>
+            <p>© 2026 Papyrus Hub</p>
+        </div>
+    </div>
+</footer>
+
+<script src="{% static 'js/global.js' %}"></script>
+<script src="{% static 'js/cart.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

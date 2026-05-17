@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — Library Hub</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="auth-navbar">
+    <a href="{% url 'home' %}" class="logo">
+        <img src="{% static 'images/papyrus_hub_logo.png' %}" alt="Library Hub Logo">
+    </a>
+    <div class="nav-links">
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}" class="active">Sign Up</a>
+    </div>
+</nav>
+
+<!-- SPLIT SCREEN -->
+<div class="auth-wrapper">
+
+    <!-- LEFT: atmospheric image -->
+    <div class="auth-image-panel">
+        <img
+            class="bg-image"
+              src="{% static 'images/library-bg2.jpg' %}"
+            alt="A grand library"
+            onerror="this.style.display='none'"
+        >
+        <div class="image-quote">
+            <blockquote>"Not all those who wander are lost — but all those who read, find themselves."</blockquote>
+            <cite>— Library Hub</cite>
+        </div>
+    </div>
+
+    <!-- RIGHT: form -->
+    <div class="auth-form-panel">
+        <div class="auth-card">
+
+            <div class="auth-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join thousands of readers on Library Hub.</p>
+
+            <div class="auth-divider">
+                <span></span><i>Register</i><span></span>
+            </div>
+
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+
+            <form method="POST" id="signupForm">
+                {% csrf_token %}
+
+                <div class="field-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="4–12 letters or numbers"
+                        required
+                        pattern="[A-Za-z0-9]{4,12}"
+                        title="Username must be 4-12 letters or numbers"
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="field-group">
+                    <label for="mail">Email</label>
+                    <input
+                        type="email"
+                        id="mail"
+                        name="email"
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="field-group">
+                    <label for="pass">Password</label>
+                    <input
+                        type="password"
+                        id="pass"
+                        name="password"
+                        placeholder="At least 8 characters"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="field-group">
+                    <label for="cpass">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="cpass"
+                        name="confirm_password"
+                        placeholder="Repeat your password"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="role-group">
+                    <div class="role-option">
+                        <input type="radio" id="user" name="role" value="user">
+                        <label for="user">User</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="admin" name="role" value="admin">
+                        <label for="admin">Admin</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn">Create Account</button>
+            </form>
+
+            <div class="auth-footer-links">
+                <p>Already have an account? <a href="{% url 'login' %}"><strong>Log In</strong></a></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/signup.js' %}"></script>
+</body>
+</html>

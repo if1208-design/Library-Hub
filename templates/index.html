@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+:root {
+  --color-dark: #2D1B0D;
+  --color-medium: #3E2723;
+  --color-accent: #B08D57;
+  --color-light: #E8D5B5;
+  --text-on-dark: #ffffff;
+  --text-on-light: #2d1b0d;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--color-light);
+  color: var(--text-on-light);
+  margin: 0;
+  padding: 0;
+}
+
+/* عنوان الصفحة */
+h1 {
+  text-align: center;
+  color: var(--color-medium);
+  margin: 30px 0;
+  font-size: 2.5em;
+}
+
+/* عنوان الكاتيجوري */
+.category-title {
+  width: 90%;
+  margin: 40px auto 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-accent);
+  color: var(--color-dark);
+}
+
+/* الجاليري */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  width: 90%;
+  margin: auto;
+}
+
+.gallery a {
+  text-decoration: none;
+  color: var(--color-dark);
+  text-align: center;
+}
+
+/* صور الكتب */
+.gallery img {
+  width: 160px;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 15px;
+  border: 4px solid var(--color-accent);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+  transition: 0.3s ease;
+}
+
+/* الهوفر */
+.gallery img:hover {
+  transform: scale(1.05);
+  border-color: var(--color-medium);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+}
+
+/* اسم الكتاب */
+.gallery p {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* السيرش */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.search-box {
+  display: flex;
+  width: 90%;
+  max-width: 600px;
+}
+
+.search-dropdown,
+#searchInput,
+.search-box button {
+  padding: 12px;
+  border: 2px solid var(--color-accent);
+  outline: none;
+}
+
+.search-dropdown {
+  border-radius: 8px 0 0 8px;
+}
+
+#searchInput {
+  flex: 1;
+  border-left: none;
+  border-right: none;
+}
+
+.search-box button {
+  background: var(--color-accent);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0 8px 8px 0;
+}
+
+.search-box button:hover {
+  background: var(--color-dark);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<h1>Welcome to Papyrus Hub</h1>
+<div class="search-section">
+    <form method="GET" action="{% url 'cover' %}">
+        <div class="search-box">
+
+            <select name="search_filter" class="search-dropdown">
+                <option value="title" {% if searchFilter == "title" %}selected{% endif %}>
+                    Title
+                </option>
+
+                <option value="author" {% if searchFilter == "author" %}selected{% endif %}>
+                    Author
+                </option>
+
+                <option value="category" {% if searchFilter == "category" %}selected{% endif %}>
+                    Category
+                </option>
+            </select>
+
+            <input type="text"
+                   name="q"
+                   id="searchInput"
+                   placeholder="Search books..."
+                   value="{{ query|default:'' }}">
+
+            <button type="submit">Search</button>
+
+        </div>
+    </form>
+</div>
+
+{% if categories %}
+    
+    {% for category_label, books in categories.items %}
+
+        <h2 class="category-title">{{ category_label }}</h2>
+
+        <div class="gallery">
+
+            {% for book in books %}
+
+                <a href="{% url 'book_details' book.pk %}">
+
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                        <img src="{% static 'images/default-book.png' %}" alt="{{ book.title }}">
+                    {% endif %}
+
+                    <p>{{ book.title }}</p>
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+    <p>No books in the library yet.</p>
+{% endif %}
+
+{% endblock %}
