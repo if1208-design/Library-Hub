@@ -113,6 +113,13 @@ h1 {
 .search-box button:hover {
   background: var(--color-dark);
 }
+
+.hasEbookLabel{
+  display: inline-block;
+  color: #cf4216;
+  font-style: italic;
+  font-weight: bold;
+}
 </style>
 {% endblock %}
 
@@ -174,7 +181,9 @@ h1 {
                     {% endif %}
 
                     <p>{{ book.title }}</p>
-
+                {% if book.ebookAvailable %}
+                  <div class="hasEbookLabel">E-book Available!</div>
+                {% endif %}
                 </a>
 
             {% endfor %}
