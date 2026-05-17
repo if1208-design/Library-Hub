@@ -67,6 +67,9 @@
                 <img src="{% static 'images/default-book.png' %}" alt="{{ book.title }}">
             {% endif %}
             <p>{{ book.title }}</p>
+            {% if book.ebookAvailable %}
+                <div class="hasEbookLabel">E-book Available!</div>
+            {% endif %}
         </a>
         {% endfor %}
     </div>
@@ -75,9 +78,7 @@
     <p>No books in the library yet.</p>
 {% endif %}
 
-<footer>
-    <p>&copy; 2026 Papyrus Hub - Where Knowledge Lives</p>
-</footer>
+
 <footer>
     <p>&copy; 2026 Papyrus Hub - Where Knowledge Lives</p>
 </footer>
