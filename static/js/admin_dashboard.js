@@ -70,8 +70,10 @@ function deleteBook(id) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Screen reload forces database calculations of numerical context counters to process instantly
-            window.location.reload(); 
+            // OPTIMIZATION: Instead of freezing the screen with a reload, 
+            // we just clear the search and fetch the new list instantly!
+            alert("Book deleted successfully!");
+            renderBooks(); 
         } else {
             alert("Error: " + (data.error || "Could not clear record."));
         }
